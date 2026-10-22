@@ -490,22 +490,7 @@ document.addEventListener('click', e => {
   nav('esplora'); render();
   $('#grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
-// parallax leggera sulla fascia (disattivata con movimento ridotto)
-(function () {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const img = document.getElementById('parallaxImg');
-  if (!img) return;
-  let ticking = false;
-  const update = () => {
-    ticking = false;
-    const r = img.parentElement.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > innerHeight) return;
-    const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
-    img.style.transform = `translateY(${(p * 60).toFixed(1)}px)`;
-  };
-  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  update();
-})();
+// parallax gestito in CSS nativo (animation-timeline: view()), nessun JS richiesto.
 
 // ---- auth: ospite / dispositivo (demo) / backend ----
 function openAuth() { $('#authModal').classList.remove('hidden'); $('#aEmail').focus(); }
