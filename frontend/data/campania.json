@@ -239,20 +239,21 @@
   },
   {
     "id": "cam-11",
-    "nome": "Parcheggio Lungomare Salerno",
+    "nome": "Parcheggio Lungomare Salerno (Salerno Mobilità)",
     "comune": "Salerno",
     "tipo": "service",
-    "indirizzo": "SS18 Lungomare Marconi 55",
+    "indirizzo": "SS18 Lungomare Guglielmo Marconi 55",
     "lat": 40.6781,
     "lng": 14.7642,
     "servizi": [
       "acqua",
       "luce",
-      "scarico"
+      "scarico",
+      "videosorveglianza"
     ],
-    "prezzo": "10€/gg + 5€ luce",
+    "prezzo": "€10–15/giorno, elettricità extra",
     "verificato": "2026-10-22",
-    "note": "Fronte porto, no prenotazione, no docce",
+    "note": "Area gestita da Salerno Mobilità; asfalto pianeggiante, non ombreggiato; pagamento al box fino alle 21; no prenotazione, no docce",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/campania/parcheggio/24740",
     "stato": "da riconfermare",
     "stagione": "annuale"
