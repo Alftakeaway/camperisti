@@ -255,7 +255,7 @@ function openDetail(id) {
     <h2 id="sheetTitle">${esc(it.nome)}</h2>
     <p class="muted">${esc(it.comune)} · ${esc(it.indirizzo || '')} · ${esc(it.regione)} ${statoBadge(it)}</p>
     <div class="chips">${(it.servizi || []).map(s => `<span>${esc(s)}</span>`).join('')}</div>
-    <p>Prezzo: ${priceLine(it)}</p>
+    <p>${(it.tipo === 'officina' || it.tipo === 'service') ? 'Servizio' : 'Prezzo'}: ${priceLine(it)}</p>
     <p class="small muted">Stagione: ${esc(it.stagione || 'da confermare')} · Ultimo controllo: ${esc(it.verificato || '—')} (automatico ogni 24h)</p>
     <p class="small muted">Fonte: ${/^https?:\/\//.test(it.fonte || '') ? `<a href="${esc(it.fonte)}" target="_blank" rel="noopener">link scheda fonte</a>` : esc(it.fonte || '—')}</p>
     ${it.sito ? `<p class="small">Sito ufficiale: <a href="${esc(it.sito)}" target="_blank" rel="noopener">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a> <button class="btn ghost" data-d="recheck">⇄ ricontrolla ora</button> <span id="liveCheck" class="muted"></span></p>` : ''}
