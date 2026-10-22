@@ -40,6 +40,13 @@ function loadLocal() {
     favs = (f && typeof f === 'object' && !Array.isArray(f)) ? f : {};
     trips = Array.isArray(t) ? t : [];
   }
+  // normalizza viaggi vecchi: id stabile + timestamp per il merge
+  trips.forEach(t => {
+    if (t && typeof t === 'object') {
+      if (!t.id) t.id = 'legacy:' + (t.created || '') + '|' + (t.name || '');
+      if (!t.u) t.u = 0;
+    }
+  });
   saveLocal();
 }
 // pulizia una tantum vecchie password demo leggibili: non più usate, via
@@ -55,7 +62,53 @@ loadLocal();
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const hasFav = id => Object.prototype.hasOwnProperty.call(favs, id);
+const hasFav = id => {
+  const e = favs[id];
+  return e !== undefined && !(typeof e === 'object' && e !== null && e.d);
+};
+const favNote = id => {
+  const e = favs[id];
+  if (typeof e === 'string') return e;
+  if (e && typeof e === 'object') return e.n || '';
+  return '';
+};
+const favLiveIds = () => Object.keys(favs).filter(hasFav);
+// normalizza forme vecchie (stringa) e nuove ({n,u,d})
+function normFav(v) {
+  if (typeof v === 'string') return { n: v, u: 0 };
+  if (v && typeof v === 'object') return { n: v.n || '', u: v.u || 0, d: v.d ? 1 : 0 };
+  return { n: '', u: 0 };
+}
+function normTrip(t) {
+  t = t && typeof t === 'object' ? t : {};
+  return {
+    id: t.id || ('legacy:' + (t.created || '') + '|' + (t.name || '')),
+    name: t.name || 'Viaggio senza nome', notes: t.notes || '',
+    stops: Array.isArray(t.stops) ? t.stops : [], created: t.created || '',
+    u: t.u || 0, d: t.d ? 1 : 0
+  };
+}
+// merge esplicito: unione + last-writer-wins per voce (u = updatedAt).
+// Le cancellazioni sono voci deleted con timestamp: se vincono, restano come
+// lapidi (propagano la cancellazione) e vengono potate dopo 90 giorni.
+const TOMB_TTL = 90 * 864e5;
+function mergeStores(lf, lt, rf, rt) {
+  const outF = {};
+  for (const k of new Set([...Object.keys(lf || {}), ...Object.keys(rf || {})])) {
+    const a = normFav((lf || {})[k]), b = normFav((rf || {})[k]);
+    const win = b.u > a.u ? b : a;
+    if (win.d && Date.now() - win.u > TOMB_TTL) continue; // lapide scaduta
+    outF[k] = win;
+  }
+  const byId = new Map();
+  for (const t of [...(lt || []), ...(rt || [])]) {
+    const n = normTrip(t);
+    const cur = byId.get(n.id);
+    if (!cur || n.u > cur.u) byId.set(n.id, n);
+  }
+  const outT = [...byId.values()].filter(t => !(t.d && Date.now() - t.u > TOMB_TTL));
+  return { favs: outF, trips: outT };
+}
 
 // ---- API same-origin con timeout (niente più tentativi verso 127.0.0.1) ----
 async function api(path, opts = {}, ms = 1800) {
@@ -173,7 +226,7 @@ function openDetail(id) {
     <p>${esc(it.note || '')}</p>
     ${it.tel ? `<p>Tel: <a href="tel:${esc(it.tel)}">${esc(it.tel)}</a></p>` : '<p class="small muted">Telefono non in scheda — riconferma prima di partire.</p>'}
     <label for="notaFav">La mia nota</label>
-    <textarea id="notaFav" placeholder="es. piazzola ombra, chiamare prima…">${esc(favs[it.id] || '')}</textarea>
+    <textarea id="notaFav" placeholder="es. piazzola ombra, chiamare prima…">${esc(favNote(it.id))}</textarea>
     <div class="row">
       <button class="btn primary" data-d="save">${saved ? 'Aggiorna nota ♥' : 'Salva ♥'}</button>
       <a class="btn ghost" target="_blank" rel="noopener" href="${mapsUrl(it)}">Naviga →</a>
@@ -191,8 +244,7 @@ $('#sheet').addEventListener('click', async e => {
   const id = $('#sheet').dataset.id;
   if (b.dataset.d === 'close') closeModal();
   if (b.dataset.d === 'save') {
-    favs[id] = $('#notaFav').value || '';
-    // normalizza: chiave presente = salvato (anche con nota vuota)
+    favs[id] = { n: $('#notaFav').value || '', u: Date.now() };
     toast('Nota salvata · ' + (await persist()));
     openDetail(id);
     render(); renderDash();
@@ -232,7 +284,10 @@ document.addEventListener('keydown', e => {
 // ---- preferiti (coerenti: chiave presente = salvato) ----
 async function toggleFav(id) {
   const adding = !hasFav(id);
-  if (!adding) delete favs[id]; else favs[id] = '';
+  const prev = favs[id];
+  const prevNote = typeof prev === 'string' ? prev : (prev && prev.n) || '';
+  // la rimozione è una lapide con timestamp: si propaga senza resuscitare dati
+  favs[id] = adding ? { n: '', u: Date.now() } : { n: prevNote, u: Date.now(), d: 1 };
   render(); renderDash();
   toast((adding ? 'Salvato ♥ · ' : 'Rimosso · ') + (await persist()));
 }
@@ -277,15 +332,10 @@ async function syncFromBackend() {
     }
     const remF = (rf.data && rf.data.favs && typeof rf.data.favs === 'object' && !Array.isArray(rf.data.favs)) ? rf.data.favs : {};
     const remT = (rt.data && Array.isArray(rt.data.trips)) ? rt.data.trips : [];
-    // raccolte remote vuote = stato valido: si fondono, non si ignorano né si cancellano i locali
-    for (const [k, v] of Object.entries(remF)) if (!hasFav(k)) favs[k] = v;
-    const seen = new Set(trips.map(t => (t.created || '') + '|' + t.name));
-    for (const t of remT) {
-      if (t && t.name && !seen.has((t.created || '') + '|' + t.name)) {
-        trips.push({ name: t.name, notes: t.notes || '', stops: Array.isArray(t.stops) ? t.stops : [], created: t.created || new Date().toISOString() });
-        seen.add((t.created || '') + '|' + t.name);
-      }
-    }
+    // merge LWW con lapidi: le cancellazioni remote con timestamp nuovo vincono,
+    // i dati locali nuovi restano; niente resurrezioni né perdite silenziose
+    const m = mergeStores(favs, trips, remF, remT);
+    favs = m.favs; trips = m.trips;
     lastSync = await persist();
     render(); renderDash();
     return lastSync;
@@ -323,9 +373,10 @@ $('#itinGrid').addEventListener('click', async e => {
   const t = ITINS.find(x => x.id === b.dataset.itin);
   const { found, missing } = resolveStops(t);
   trips.push({
+    id: 't' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36),
     name: t.titolo,
     notes: (t.note || '') + ' — ' + t.km + (missing.length ? '\nDa completare (non in catalogo): ' + missing.join(' · ') : ''),
-    stops: found, created: new Date().toISOString()
+    stops: found, created: new Date().toISOString(), u: Date.now()
   });
   const where = await persist();
   renderDash(); nav('dashboard');
@@ -344,6 +395,7 @@ function renderDash() {
   $('#favList').innerHTML = items.map(i => `<div class="favrow"><b>${esc(i.nome)}</b><span class="muted small">${esc(i.comune)}</span><button class="btn ghost" data-unfav="${esc(i.id)}" aria-label="Rimuovi ${esc(i.nome)}">✕</button></div>`).join('')
     || '<p class="muted">Nessun salvato. Tocca ♡ sulle schede.</p>';
   $('#tripList').innerHTML = trips.map((t, ix) => {
+    if (t.d) return ''; // cancellato: lapide invisibile ma conservata per la sync
     const stops = (t.stops || []).map((sid, six) => {
       const s = findItem(sid);
       return `<div class="favrow small"><span>${six + 1}. <b>${esc(s ? s.nome : sid)}</b></span>
@@ -357,6 +409,7 @@ function renderDash() {
       <button class="btn ghost" data-gpx="${ix}">GPX viaggio</button>
       <button class="btn ghost" data-deltrip="${ix}">Elimina</button></div></div>`;
   }).join('') || '<p class="muted">Nessun viaggio. Creane uno o importa un itinerario.</p>';
+  if (!trips.some(t => !t.d)) $('#tripList').innerHTML = '<p class="muted">Nessun viaggio. Creane uno o importa un itinerario.</p>';
 }
 $('#favList').addEventListener('click', e => {
   const b = e.target.closest('[data-unfav]');
@@ -371,14 +424,14 @@ $('#tripList').addEventListener('click', e => {
     const [ix, six, d] = mv.dataset.mv.split(',').map(Number);
     const st = trips[ix].stops;
     const j = six + d;
-    if (j >= 0 && j < st.length) { [st[six], st[j]] = [st[j], st[six]]; persist(); renderDash(); }
+    if (j >= 0 && j < st.length) { [st[six], st[j]] = [st[j], st[six]]; trips[ix].u = Date.now(); persist(); renderDash(); }
   }
   if (rm) {
     const [ix, six] = rm.dataset.rmstop.split(',').map(Number);
-    trips[ix].stops.splice(six, 1); persist(); renderDash();
+    trips[ix].stops.splice(six, 1); trips[ix].u = Date.now(); persist(); renderDash();
   }
   if (gx) exportTripGpx(+gx.dataset.gpx);
-  if (del) { trips.splice(+del.dataset.deltrip, 1); persist(); renderDash(); }
+  if (del) { const t = trips[+del.dataset.deltrip]; trips[+del.dataset.deltrip] = { ...t, d: 1, u: Date.now() }; persist(); renderDash(); }
 });
 $('#tripList').addEventListener('change', e => {
   const s = e.target.closest('[data-addstop]');
@@ -386,20 +439,21 @@ $('#tripList').addEventListener('change', e => {
     const ix = +s.dataset.addstop;
     trips[ix].stops = trips[ix].stops || [];
     trips[ix].stops.push(s.value);
+    trips[ix].u = Date.now();
     persist(); renderDash();
   }
 });
 $('#saveTrip').onclick = async () => {
   if (!user) return openAuth();
   const n = $('#tripName').value.trim() || 'Viaggio senza nome';
-  trips.push({ name: n, notes: $('#tripNotes').value || '', stops: Object.keys(favs), created: new Date().toISOString() });
+  trips.push({ id: 't' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36), name: n, notes: $('#tripNotes').value || '', stops: favLiveIds(), created: new Date().toISOString(), u: Date.now() });
   $('#tripName').value = ''; $('#tripNotes').value = '';
   renderDash(); toast('Viaggio salvato · ' + (await persist()));
 };
 const gpxEsc = s => String(s ?? '').replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
 function exportTripGpx(ix) {
   const t = trips[ix];
-  if (!t || !(t.stops || []).length) return toast('Aggiungi almeno una tappa');
+  if (!t || t.d || !(t.stops || []).length) return toast('Aggiungi almeno una tappa');
   const wpts = t.stops.map((sid, k) => {
     const i = findItem(sid);
     if (!i || i.lat == null) return '';
@@ -413,8 +467,8 @@ function exportTripGpx(ix) {
 $('#exportTxt').onclick = () => {
   const items = allItems().filter(x => hasFav(x.id));
   const txt = `CAMPERISTI — ${new Date().toLocaleDateString('it-IT')}\nCatalogo in verifica: riconferma sempre telefono e prezzi.\n\nSALVATI:\n`
-    + items.map(i => `- ${i.nome} (${i.comune}) ${i.lat},${i.lng} [${(i.servizi || []).join(', ')}] nota: ${favs[i.id] || ''}`).join('\n')
-    + `\n\nVIAGGI:\n` + trips.map(t => `## ${t.name}\n${t.notes}\nTappe: ${(t.stops || []).join(' → ')}`).join('\n');
+    + items.map(i => `- ${i.nome} (${i.comune}) ${i.lat},${i.lng} [${(i.servizi || []).join(', ')}] nota: ${favNote(i.id)}`).join('\n')
+    + `\n\nVIAGGI:\n` + trips.filter(t => !t.d).map(t => `## ${t.name}\n${t.notes}\nTappe: ${(t.stops || []).join(' → ')}`).join('\n');
   dl('camperisti.txt', txt, 'text/plain');
 };
 function dl(name, text, type) {
@@ -519,11 +573,15 @@ $('#deviceBtn').onclick = async () => {
   $('#authBtn').focus();
 };
 $('#logoutBtn').onclick = async () => {
+  // revoca la sessione sul server prima di pulire il locale (logout effettivo)
+  try {
+    if (user && user.token) await api('/api/auth/logout', { method: 'POST', headers: authH() });
+  } catch (e) {}
   await persist();
   user = null; favs = {}; trips = [];
   try { localStorage.removeItem('camperisti_user'); } catch (e) {}
   paintAuth(); renderDash();
-  toast('Uscito · ogni identità conserva il proprio archivio');
+  toast('Uscito · sessione revocata, ogni identità conserva il proprio archivio');
 };
 async function authCall(mode) {
   const email = $('#aEmail').value.trim().toLowerCase();

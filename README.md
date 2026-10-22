@@ -15,8 +15,18 @@ diretto senza TLS). Sicurezza per account reali:
 
 - Password con **Argon2id** + salt CSPRNG (formato PHC), verifica a tempo costante;
   login di utenti inesistenti verificato contro hash fittizio (no enumeration).
+  Limiti in caratteri (non byte): password 8-128, così le emoji valgono 1.
+- Identità con **uid immutabile**: preferiti/viaggi in file `favs_<uid>.json`,
+  niente più derivazioni dall'email (niente collisioni tipo `a+b@` vs `ab@`);
+  uid assegnato anche agli account preesistenti al primo login, con migrazione
+  una tantum dei vecchi file.
 - Token sessione **256 bit da OsRng**, scadenza 14 giorni, revoca con
-  `POST /api/auth/logout`.
+  `POST /api/auth/logout` (il pulsante Esci la chiama sempre).
+- Rate limiting **10 tentativi auth/min per IP reale**: `X-Forwarded-For` vale
+  solo dai proxy in `TRUSTED_PROXIES` (default solo loopback + `10.0.0.0/8`-style
+  CIDR ammessi); dagli altri peer si usa l'IP TCP. Dietro Nginx:
+  `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` e backend con
+  `TRUSTED_PROXIES` = IP privati propri.
 - Validazione input (email, password 8-128, nome ≤80), body max 1 MiB con
   rifiuto anticipato, rate limiting **10 tentativi auth/min per IP** (429).
 - Scritture atomiche (tmp + rename) sotto mutex, letture mai troncate.

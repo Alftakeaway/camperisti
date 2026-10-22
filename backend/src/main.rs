@@ -28,6 +28,17 @@ static STORE: Mutex<()> = Mutex::new(());
 // Contatori rate limiting per IP: ip -> (tentativi, inizio finestra)
 static RATE: LazyLock<Mutex<HashMap<String, (u32, u64)>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
+// Proxy a cui credere per X-Forwarded-For (default: solo loopback).
+// In produzione: IP privati del proprio stack (es. "10.0.0.0/8") o IP del LB.
+// Mai fidarsi di XFF da client arbitrari: rate limit aggirabile.
+static TRUSTED_PROXIES: LazyLock<Vec<String>> = LazyLock::new(|| {
+    std::env::var("TRUSTED_PROXIES")
+        .unwrap_or("127.0.0.1,::1".to_string())
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect()
+});
 // Hash fittizio per tempi di risposta uniformi quando l'utente non esiste
 // (niente enumeration via timing). Inizializzato all'avvio.
 static DUMMY_HASH: LazyLock<String> = LazyLock::new(|| {
@@ -130,6 +141,47 @@ fn rate_ok(ip: &str) -> bool {
     }
     e.0 += 1;
     true
+}
+
+// IPv4 CIDR semplice (es. "10.0.0.0/8"); IPv6 solo match esatto
+fn ip_in_cidr(ip: &std::net::IpAddr, cidr: &str) -> bool {
+    let Some((net, bits)) = cidr.split_once('/') else {
+        return false;
+    };
+    let (Ok(net_ip), Ok(bits)) = (net.parse::<std::net::IpAddr>(), bits.parse::<u32>()) else {
+        return false;
+    };
+    match (ip, net_ip) {
+        (std::net::IpAddr::V4(a), std::net::IpAddr::V4(n)) if bits <= 32 => {
+            let m = if bits == 0 { 0 } else { u32::MAX << (32 - bits) };
+            (u32::from(*a) & m) == (u32::from(n) & m)
+        }
+        _ => false,
+    }
+}
+
+fn proxy_trusted(peer: &str) -> bool {
+    let ip: Option<std::net::IpAddr> = peer.parse().ok();
+    TRUSTED_PROXIES.iter().any(|t| {
+        t == peer || ip.map(|a| ip_in_cidr(&a, t)).unwrap_or(false)
+    })
+}
+
+// IP client reale: X-Forwarded-For vale SOLO se il peer è un proxy fidato,
+// altrimenti si usa l'indirizzo TCP (spoofing impossibile).
+fn client_ip(headers: &[String], peer: &str) -> String {
+    if !proxy_trusted(peer) {
+        return peer.to_string();
+    }
+    for h in headers {
+        if let Some(v) = h.to_ascii_lowercase().strip_prefix("x-forwarded-for:") {
+            let first = v.split(',').next().unwrap_or("").trim().trim_matches('"');
+            if first.parse::<std::net::IpAddr>().is_ok() {
+                return first.to_string();
+            }
+        }
+    }
+    peer.to_string()
 }
 
 fn valid_email(s: &str) -> bool {
@@ -334,14 +386,20 @@ fn check_user(users: &str, email: &str, pass: &str) -> Option<String> {
     }
 }
 
-fn put_user(email: &str, nome: &str, hash: &str) -> bool {
+fn put_user(email: &str, nome: &str, hash: &str, uid: &str) -> bool {
     with_store(|| {
         let fp = data_dir().join("users.json");
         let users = load_users();
         if users.contains(&format!("\"{}\":", esc(email))) {
             return false;
         }
-        let entry = format!("\"{}\":{{\"nome\":\"{}\",\"hash\":\"{}\"}}", esc(email), esc(nome), hash);
+        let entry = format!(
+            "\"{}\":{{\"nome\":\"{}\",\"hash\":\"{}\",\"uid\":\"{}\"}}",
+            esc(email),
+            esc(nome),
+            hash,
+            uid
+        );
         let next = if users.contains("\"users\":{}") {
             users.replacen("\"users\":{}", &format!("\"users\":{{{}}}", entry), 1)
         } else if users.rfind("}}").is_some() {
@@ -373,15 +431,19 @@ fn pw_verify(stored: &str, pass: &str) -> bool {
     Argon2::default().verify_password(pass.as_bytes(), &h).is_ok()
 }
 
-// Token 256 bit da CSPRNG di sistema
-fn new_token() -> String {
+// ID utente e token: 256 bit da CSPRNG di sistema
+fn new_id() -> String {
     let b: [u8; 32] = rand::random();
     b.iter().map(|x| format!("{:02x}", x)).collect()
 }
 
-// sessions.json: {"sessions": {"token": {"email": "...", "created": 123}}}
-// scadenza assoluta SESSION_TTL_SECS
-fn session_email(token: &str) -> Option<String> {
+fn new_token() -> String {
+    new_id()
+}
+
+// sessions.json: {"sessions": {"token": {"email": "..", "uid": "..", "created": 123}}}
+// scadenza assoluta SESSION_TTL_SECS. Ritorna (email, uid).
+fn session_uid(token: &str) -> Option<(String, String)> {
     if token.is_empty() {
         return None;
     }
@@ -389,7 +451,8 @@ fn session_email(token: &str) -> Option<String> {
     let cur = fs::read_to_string(fp).unwrap_or("{\"sessions\":{}}".into());
     let rec = extract_record(&cur, token)?;
     let email = take_quoted(rec.split("\"email\":\"").nth(1)?);
-    if email.is_empty() {
+    let uid = rec.split("\"uid\":\"").nth(1).map(take_quoted).unwrap_or_default();
+    if email.is_empty() || uid.is_empty() {
         return None;
     }
     let created: u64 = rec
@@ -403,14 +466,20 @@ fn session_email(token: &str) -> Option<String> {
     if now_secs().saturating_sub(created) > SESSION_TTL_SECS {
         return None;
     }
-    Some(email)
+    Some((email, uid))
 }
 
-fn store_session(token: &str, email: &str) {
+fn store_session(token: &str, email: &str, uid: &str) {
     with_store(|| {
         let fp = data_dir().join("sessions.json");
         let cur = fs::read_to_string(&fp).unwrap_or("{\"sessions\":{}}".into());
-        let entry = format!("\"{}\":{{\"email\":\"{}\",\"created\":{}}}", token, esc(email), now_secs());
+        let entry = format!(
+            "\"{}\":{{\"email\":\"{}\",\"uid\":\"{}\",\"created\":{}}}",
+            token,
+            esc(email),
+            uid,
+            now_secs()
+        );
         let next = if cur.contains("\"sessions\":{}") {
             cur.replacen("\"sessions\":{}", &format!("\"sessions\":{{{}}}", entry), 1)
         } else if let Some(inner) = cur.rfind("}}") {
@@ -491,6 +560,40 @@ fn remove_session(token: &str) -> bool {
             None => false,
         }
     })
+}
+
+// Assicura un uid immutabile all'utente (migra i record pre-uid al login).
+// Ritorna l'uid esistente o appena assegnato.
+fn ensure_uid(email: &str) -> Option<String> {
+    with_store(|| {
+        let fp = data_dir().join("users.json");
+        let users = load_users();
+        let rec = extract_record(&users, email)?;
+        if let Some(uid) = rec.split("\"uid\":\"").nth(1).map(take_quoted) {
+            if !uid.is_empty() {
+                return Some(uid);
+            }
+        }
+        let uid = new_id();
+        let needle = format!("\"{}\":", esc(email));
+        let rec_start = users.find(&needle)? + needle.len();
+        // inserisce "uid" come primo campo del record (dopo la graffa aperta)
+        let mut s = users.clone();
+        s.insert_str(rec_start + 1, &format!("\"uid\":\"{}\",", uid));
+        atomic_write(&fp, &s).then_some(uid)
+    })
+}
+
+// File dati per uid immutabile. Migra una tantum il vecchio file per email sanitizzata.
+fn user_file(kind: &str, email: &str, uid: &str) -> PathBuf {
+    let fp = data_dir().join(format!("{}_{}.json", kind, uid));
+    if !fp.exists() {
+        let legacy = data_dir().join(format!("{}_{}.json", kind, safe_email(email)));
+        if legacy.exists() {
+            let _ = fs::rename(&legacy, &fp);
+        }
+    }
+    fp
 }
 
 fn safe_email(email: &str) -> String {
@@ -585,15 +688,17 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
         return Ok(());
     }
 
-    let dd = data_dir();
+    // (data_dir risolto dalle helper user_file/store_session/...)
     let peer = stream
         .peer_addr()
         .map(|a| a.ip().to_string())
         .unwrap_or("?".to_string());
 
-    // rate limiting su tutte le rotte auth
+    // rate limiting su tutte le rotte auth, per IP client reale
+    // (X-Forwarded-For vale solo da proxy fidati, vedi TRUSTED_PROXIES)
+    let client = client_ip(&headers, &peer);
     let is_auth = path.starts_with("/api/auth/") && method == "POST";
-    if is_auth && !rate_ok(&peer) {
+    if is_auth && !rate_ok(&client) {
         send_extra(
             &mut stream,
             "HTTP/1.1 429 Too Many Requests",
@@ -615,15 +720,19 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
             send(&mut stream, "HTTP/1.1 500 Internal Server Error", r#"{"error":"errore interno"}"#);
             return Ok(());
         };
-        if !put_user(&email, &nome, &h) {
+        if !put_user(&email, &nome, &h, &new_id()) {
             send(&mut stream, "HTTP/1.1 409 Conflict", r#"{"error":"utente già registrato"}"#);
             return Ok(());
         }
+        let Some(uid) = ensure_uid(&email) else {
+            send(&mut stream, "HTTP/1.1 500 Internal Server Error", r#"{"error":"errore interno"}"#);
+            return Ok(());
+        };
         let tok = new_token();
-        store_session(&tok, &email);
+        store_session(&tok, &email, &uid);
         let out = format!(
-            "{}\"ok\":true,\"email\":\"{}\",\"nome\":\"{}\",\"token\":\"{}\"{}",
-            "{", esc(&email), esc(&nome), tok, "}"
+            "{}\"ok\":true,\"email\":\"{}\",\"nome\":\"{}\",\"uid\":\"{}\",\"token\":\"{}\"{}",
+            "{", esc(&email), esc(&nome), uid, tok, "}"
         );
         send(&mut stream, "HTTP/1.1 200 OK", &out);
         return Ok(());
@@ -632,18 +741,24 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
     if path == "/api/auth/login" && method == "POST" {
         let email = jval(&body_s, "email").to_lowercase();
         let pass = jval(&body_s, "pass");
-        if !valid_email(&email) || pass.is_empty() || pass.len() > 128 {
+        // stessa unità della registrazione (caratteri, non byte): niente 400 su
+        // password lunghe ma valide, solo 401 generico per non dare oracoli
+        if !valid_email(&email) || pass.is_empty() {
             send(&mut stream, "HTTP/1.1 400 Bad Request", r#"{"error":"richiesta non valida"}"#);
             return Ok(());
         }
         let users = load_users();
         match check_user(&users, &email, &pass) {
             Some(nome) => {
+                let Some(uid) = ensure_uid(&email) else {
+                    send(&mut stream, "HTTP/1.1 500 Internal Server Error", r#"{"error":"errore interno"}"#);
+                    return Ok(());
+                };
                 let tok = new_token();
-                store_session(&tok, &email);
+                store_session(&tok, &email, &uid);
                 let out = format!(
-                    "{}\"ok\":true,\"email\":\"{}\",\"nome\":\"{}\",\"token\":\"{}\"{}",
-                    "{", esc(&email), esc(&nome), tok, "}"
+                    "{}\"ok\":true,\"email\":\"{}\",\"nome\":\"{}\",\"uid\":\"{}\",\"token\":\"{}\"{}",
+                    "{", esc(&email), esc(&nome), uid, tok, "}"
                 );
                 send(&mut stream, "HTTP/1.1 200 OK", &out);
             }
@@ -662,17 +777,17 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
         return Ok(());
     }
 
-    // ---- rotte autenticate: identità SOLO dal token Bearer ----
+    // ---- rotte autenticate: identità SOLO dal token Bearer (uid immutabile) ----
     if path.starts_with("/api/favorites") || path.starts_with("/api/trips") {
-        let email = match session_email(&bearer(&headers)) {
-            Some(e) => e,
+        let (email, uid) = match session_uid(&bearer(&headers)) {
+            Some(v) => v,
             None => {
                 send(&mut stream, "HTTP/1.1 401 Unauthorized", r#"{"error":"sessione richiesta"}"#);
                 return Ok(());
             }
         };
         let kind = if path.starts_with("/api/favorites") { "favs" } else { "trips" };
-        let fp = dd.join(format!("{}_{}.json", kind, safe_email(&email)));
+        let fp = user_file(kind, &email, &uid);
         if method == "GET" {
             let c = fs::read_to_string(&fp).unwrap_or(if kind == "favs" {
                 "{\"favs\":{}}".into()

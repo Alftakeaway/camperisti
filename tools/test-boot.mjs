@@ -10,7 +10,7 @@ function block(from, to) {
   return src.slice(a, b + to.length);
 }
 const initCode = block('// ---- stato locale', 'loadLocal();');
-const matchCode = block('function resolveStops', '\n}\n').replace(/\n\}$/, '\n}');
+const mergeCode = block('// normalizza forme vecchie', '// ---- API same-origin');
 
 function run(store) {
   const keys = { ...store };
@@ -63,9 +63,45 @@ const sb = { DB: { lazio: [
   { id: 'b', nome: 'Area Roma Nord', comune: 'Roma' },
 ] }, findItem: id => sb.DB.lazio.find(x => x.id === id) };
 vm.createContext(sb);
-vm.runInContext(matchCode, sb);
+const rsA = src.indexOf('function resolveStops');
+const rsB = src.indexOf('\nfunction renderItins', rsA);
+if (rsA < 0 || rsB < 0) throw new Error('resolveStops non trovato');
+vm.runInContext(src.slice(rsA, rsB), sb);
 const m = vm.runInContext('resolveStops({regione:"lazio",stops:["a","inesistente","a"],extra:["Posto X (non in catalogo)"]})', sb);
 console.log('resolve:', JSON.stringify(m));
 if (m.found.join() !== 'a' || m.missing.join() !== 'Posto X (non in catalogo)') throw new Error('resolve errato');
+
+// 7. mergeStores: unione, LWW, lapidi, legacy
+const sb2 = {};
+vm.createContext(sb2);
+vm.runInContext(mergeCode, sb2);
+const MG = (lf, lt, rf, rt) => vm.runInContext(
+  `mergeStores(${JSON.stringify(lf)},${JSON.stringify(lt)},${JSON.stringify(rf)},${JSON.stringify(rt)})`, sb2);
+let r;
+const NOW = Date.now(), T1 = NOW - 3000, T2 = NOW - 2000, T3 = NOW - 1000;
+// unione senza conflitti
+r = MG({ a: { n: 'x', u: T1 } }, [], { b: { n: 'y', u: T1 } }, []);
+if (!r.favs.a || !r.favs.b) throw new Error('unione fallita');
+// LWW: vince il più recente
+r = MG({ a: { n: 'vecchia', u: T1 } }, [], { a: { n: 'nuova', u: T2 } }, []);
+if (r.favs.a.n !== 'nuova') throw new Error('LWW fallito');
+// lapide recente cancella, non resuscita
+r = MG({ a: { n: 'vecchia', u: T1 } }, [], { a: { n: '', u: T2, d: 1 } }, []);
+if (!r.favs.a || r.favs.a.d !== 1) throw new Error('lapide non applicata');
+// live recente batte lapide vecchia (re-add intenzionale)
+r = MG({ a: { n: 'di nuovo', u: T3 } }, [], { a: { n: '', u: T2, d: 1 } }, []);
+if (r.favs.a.d || r.favs.a.n !== 'di nuovo') throw new Error('re-add fallito');
+// legacy stringa + oggetto
+r = MG({ a: 'nota' }, [], {}, []);
+if (r.favs.a.n !== 'nota') throw new Error('legacy non normalizzato');
+// trip: dedupe per id, LWW, lapide
+r = MG({}, [{ id: '1', name: 'V', notes: 'a', stops: ['x'], created: 'c', u: T1 }], {}, [{ id: '1', name: 'V', notes: 'b', stops: ['x', 'y'], created: 'c', u: T2 }]);
+if (r.trips.length !== 1 || r.trips[0].notes !== 'b') throw new Error('trip LWW fallito');
+r = MG({}, [{ id: '1', name: 'V', notes: 'b', stops: ['x'], created: 'c', u: T2 }], {}, [{ id: '1', name: 'V', notes: '', stops: [], created: 'c', u: T3, d: 1 }]);
+if (!r.trips[0].d) throw new Error('trip deleted non propagato');
+// lapide antica potata
+r = MG({ a: { n: '', u: 1, d: 1 } }, [], {}, []);
+if (r.favs.a) throw new Error('lapide antica non potata');
+console.log('merge LWW + lapidi OK');
 
 console.log('BOOT-TEST-OK');
