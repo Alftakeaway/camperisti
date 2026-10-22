@@ -188,6 +188,12 @@ function scopedItems() {
   return { pool, q };
 }
 
+function priceLine(it) {
+  if (it.tipo === 'officina' || it.tipo === 'service') {
+    return `<span class="muted">Preventivi su richiesta</span>`;
+  }
+  return `<span class="price">${esc(it.prezzo || 'contattare la struttura')}</span>`;
+}
 function statoBadge(it) {
   return it.stato === 'verificato'
     ? '<span class="badge ok">verificato</span>'
@@ -212,7 +218,7 @@ function card(it) {
     <h3>${esc(it.nome)}</h3>
     <p class="muted small">${esc(it.comune)} · ${esc(it.indirizzo || '')}</p>
     <div class="chips">${(it.servizi || []).slice(0, 6).map(s => `<span>${esc(s)}</span>`).join('')}</div>
-    <p><span class="price">${esc(it.prezzo || 'n.d.')}</span>
+    <p>${priceLine(it)}
     <span class="muted small"> · controllo ${esc(it.verificato || '—')}${it.stagione ? ' · ' + esc(it.stagione) : ''}</span></p>
     <div class="row">
       <button class="btn ghost" data-act="detail" data-id="${esc(it.id)}">Dettagli</button>
@@ -249,7 +255,7 @@ function openDetail(id) {
     <h2 id="sheetTitle">${esc(it.nome)}</h2>
     <p class="muted">${esc(it.comune)} · ${esc(it.indirizzo || '')} · ${esc(it.regione)} ${statoBadge(it)}</p>
     <div class="chips">${(it.servizi || []).map(s => `<span>${esc(s)}</span>`).join('')}</div>
-    <p>Prezzo: <b class="price">${esc(it.prezzo || 'contattare la struttura')}</b></p>
+    <p>Prezzo: ${priceLine(it)}</p>
     <p class="small muted">Stagione: ${esc(it.stagione || 'da confermare')} · Ultimo controllo: ${esc(it.verificato || '—')} (automatico ogni 24h)</p>
     <p class="small muted">Fonte: ${/^https?:\/\//.test(it.fonte || '') ? `<a href="${esc(it.fonte)}" target="_blank" rel="noopener">link scheda fonte</a>` : esc(it.fonte || '—')}</p>
     ${it.sito ? `<p class="small">Sito ufficiale: <a href="${esc(it.sito)}" target="_blank" rel="noopener">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a> <button class="btn ghost" data-d="recheck">⇄ ricontrolla ora</button> <span id="liveCheck" class="muted"></span></p>` : ''}
