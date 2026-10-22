@@ -112,18 +112,17 @@ body.ops .hero-inner{margin-bottom:12px}
 .gal-card b{font-size:18px}
 .gal-card small{color:#cfe0d6}
 .credits{margin-top:10px}
-/* fascia parallax: nativa CSS scroll-driven, niente JS */
-.parallax{position:relative;height:38vh;min-height:260px;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.parallax img{position:absolute;left:0;width:100%;height:130%;top:-15%;object-fit:cover;will-change:transform;
-  animation:parallaxY linear both;animation-timeline:view(block root);animation-range:entry 0% exit 100%}
-@keyframes parallaxY{from{transform:translateY(-5%)}to{transform:translateY(5%)}}
-@supports not (animation-timeline:view()){
-  .parallax img{animation:none;height:100%;top:0}
-  .parallax{height:32vh;min-height:220px}
-}
-.parallax-cap{position:absolute;inset:auto 0 0 0;padding:28px 20px;background:linear-gradient(transparent,rgba(0,0,0,.72));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+/* fascia parallax: immagine fissa ritagliata dalla sezione (nativo CSS, niente JS).
+   Il clip-path crea il contesto di ritaglio: l'img resta ferma mentre la pagina
+   scorre = vero effetto parallax, anche su mobile. */
+.parallax{position:relative;height:52vh;min-height:300px;overflow:clip;clip-path:inset(0 0 0 0);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.parallax img{position:fixed;inset:0;width:100%;height:100vh;object-fit:cover;z-index:-1}
+.parallax-cap{position:absolute;inset:auto 0 0 0;padding:28px 20px;background:linear-gradient(transparent,rgba(0,0,0,.72));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;z-index:1}
 .parallax-cap p{margin:0;max-width:640px}
-/* movimento ridotto */
+/* movimento ridotto: le fasce diventano immagini statiche in-flow */
+@media (prefers-reduced-motion: reduce){
+  .parallax img{position:absolute;height:100%}
+}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .marquee .track{animation:none;white-space:normal}
