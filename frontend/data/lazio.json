@@ -208,10 +208,11 @@
     "verificato": "2026-10-22",
     "note": "ATTENZIONE: segnalata CHIUSA fino a nuova comunicazione (camperonline) — chiamare prima. 50 piazzole fronte lago.",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/area-guadetto/990",
-    "stato": "verificato",
+    "stato": "da riconfermare",
     "stagione": null,
     "tel": "+39 328 2790397",
-    "sito": "http://www.areacamperilguadetto.it"
+    "sito": "http://www.areacamperilguadetto.it",
+    "sitoOk": false
   },
   {
     "id": "laz-10",
@@ -234,7 +235,8 @@
     "stato": "verificato",
     "stagione": null,
     "tel": "+39 0761 600972",
-    "sito": "https://instagram.com/countrybar_agriturismo_gentile"
+    "sito": "https://instagram.com/countrybar_agriturismo_gentile",
+    "sitoOk": true
   },
   {
     "id": "laz-11",
@@ -281,7 +283,8 @@
     "stato": "verificato",
     "stagione": "annuale H24",
     "tel": "+39 328 3736209",
-    "sito": "https://quirino-area-sosta-camper.figma.site/"
+    "sito": "https://quirino-area-sosta-camper.figma.site/",
+    "sitoOk": true
   },
   {
     "id": "laz-13",
@@ -304,7 +307,8 @@
     "stato": "verificato",
     "stagione": null,
     "tel": "+39 0773 593045 / +39 349 2975852",
-    "sito": "http://www.agriturismomizzon.com"
+    "sito": "http://www.agriturismomizzon.com",
+    "sitoOk": true
   },
   {
     "id": "laz-14",

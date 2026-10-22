@@ -350,13 +350,15 @@
       "navetta",
       "navetta templi"
     ],
-    "prezzo": "€25/notte tutto compreso",
+    "prezzo": "€15–30/24h servizi inclusi (€1 docce)",
     "verificato": "2026-10-22",
-    "note": "Solo pagina Facebook Parkingland, nessun sito ufficiale",
-    "fonte": "https://www.campercontact.com/it/italia/sicilia/realmonte/50811/area-attrezzata-parking-scala-dei-turchi-lmichelangelo",
-    "stato": "da riconfermare",
+    "note": "Area L. Michelangelo, navetta spiaggia inclusa; email scaladeiturchiparking@virgilio.it",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sicilia/parking-scala-dei-turchi-l-michelangelo/12840",
+    "stato": "verificato",
     "stagione": null,
-    "tel": "+39 333 6635936"
+    "tel": "+39 333 6635936",
+    "sito": "http://www.parkingscaladeiturchi.com/",
+    "sitoOk": true
   },
   {
     "id": "sic-17",

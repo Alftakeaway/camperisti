@@ -106,10 +106,12 @@
     "prezzo": "€15/notte + €12 elettricità",
     "verificato": "2026-10-22",
     "note": "300m mare",
-    "fonte": "https://park4night.com/en/place/81808",
-    "stato": "da riconfermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/ristorante-bar-mizar/21286",
+    "stato": "verificato",
     "stagione": "stagionale (chiusura ~fine settembre)",
-    "tel": "+39 335 5640546"
+    "tel": "+39 335 5640546",
+    "sito": "https://www.facebook.com/RistoPizzaMizar",
+    "sitoOk": true
   },
   {
     "id": "sar-06",
@@ -250,10 +252,11 @@
     "verificato": "2026-10-22",
     "note": "86 piazzole, 3km Porto Pino",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/agricampeggio-il-ruscello/10854",
-    "stato": "verificato",
+    "stato": "da riconfermare",
     "stagione": "annuale",
     "tel": "+39 340 7788952",
-    "sito": "http://www.agricampingruscello.it"
+    "sito": "http://www.agricampingruscello.it",
+    "sitoOk": false
   },
   {
     "id": "sar-12",

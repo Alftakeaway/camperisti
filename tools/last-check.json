@@ -1,9 +1,12 @@
 {
   "date": "2026-10-22",
-  "ok": 48,
-  "ko": 2,
+  "ok": 55,
+  "ko": 5,
   "bad": [
+    "cam-12 Pontecagnano Faiano https://camperstopitaly.com/it (http 502)",
+    "laz-09 Bolsena http://www.areacamperilguadetto.it (http 0)",
     "sar-09 Sant'Antioco Cala Sapone https://www.camping-tonnara.it (http 0)",
+    "sar-11 Sant'Anna Arresi http://www.agricampingruscello.it (http 0)",
     "sic-07 Castiglione di Sicilia https://www.etnawineagriturismo.it/en/agricamper.html (http 0)"
   ]
 }
