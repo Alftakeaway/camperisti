@@ -1,20 +1,36 @@
 # Camperisti beta — Campania · Lazio · Sardegna · Sicilia
 
-Piattaforma a costo zero: frontend statico + backend Rust senza dipendenze.
-
-## Struttura
-- `frontend/` sito statico: `index.html`, `styles.css`, `app.js`, `data/*.json`
-- `backend/` Rust std-only (zero crate): `cargo run` → http://127.0.0.1:3001
-- API: `GET /api/health`, `GET /api/areas?regione=campania|lazio|sardegna|sicilia`,
-  `POST /api/auth/register`, `POST /api/auth/login`,
-  `GET/POST /api/favorites?email=`, `GET/POST /api/trips?email=`
+Piattaforma a costo zero: frontend statico + backend Rust (solo 2 crate di sicurezza).
 
 ## Avvio locale
-1. Backend (facoltativo, il sito funziona anche senza):
-   `cd backend` → `cargo run`
-2. Frontend: apri `frontend/index.html` oppure `npx serve frontend`
-   Se il backend è attivo, login e salvataggi si sincronizzano lì,
-   altrimenti restano in localStorage.
+
+- Frontend: apri `frontend/index.html` oppure `npx serve frontend`.
+- Backend (facoltativo, il sito funziona anche senza): `cd backend` → `cargo run`.
+  Con backend attivo, login e salvataggi si sincronizzano lì.
+
+## Backend Rust (`backend/`, v0.2.0)
+
+API JSON su `127.0.0.1:3001` di default (`BIND_ADDR` per cambiare, mai esporre
+diretto senza TLS). Sicurezza per account reali:
+
+- Password con **Argon2id** + salt CSPRNG (formato PHC), verifica a tempo costante;
+  login di utenti inesistenti verificato contro hash fittizio (no enumeration).
+- Token sessione **256 bit da OsRng**, scadenza 14 giorni, revoca con
+  `POST /api/auth/logout`.
+- Validazione input (email, password 8-128, nome ≤80), body max 1 MiB con
+  rifiuto anticipato, rate limiting **10 tentativi auth/min per IP** (429).
+- Scritture atomiche (tmp + rename) sotto mutex, letture mai troncate.
+- CORS ristretto a `CORS_ORIGIN` (default frontend prod), `X-Content-Type-Options`.
+
+Deploy produzione: solo dietro reverse proxy con TLS (Caddy/Nginx, HSTS sul
+proxy), `CORS_ORIGIN` = dominio reale, backup periodico di `backend/data/`.
+Scala consigliata oltre poche migliaia di utenti: SQLite/Postgres + framework.
+
+```powershell
+cd backend
+cargo run              # locale
+$env:CORS_ORIGIN="https://tuo-dominio"; cargo run
+```
 
 ## Funzioni
 - Esplora per regione/tipo/testo, schede con servizi/prezzo/verificato, navigazione Google Maps

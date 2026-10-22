@@ -1,17 +1,53 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+use std::collections::HashMap;
 use std::fs;
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{LazyLock, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_hash::SaltString};
+use rand::rngs::OsRng;
 
 static ACTIVE: AtomicUsize = AtomicUsize::new(0);
 const MAX_THREADS: usize = 32;
+// auth: max 10 tentativi/min per IP (login/register/logout)
+const AUTH_LIMIT: u32 = 10;
+const AUTH_WINDOW_SECS: u64 = 60;
+// sessioni: 14 giorni, poi nuovo login
+const SESSION_TTL_SECS: u64 = 14 * 24 * 3600;
 
-// NOTA: backend dimostrativo per uso locale. Prima di esporlo su Internet servono:
-// password hashing (argon2), TLS, rate limiting, DB transazionale, backup.
+// Origine consentita per CORS (stessa origine in produzione dietro reverse proxy).
+// Di default il frontend pubblico; in locale impostare CORS_ORIGIN=http://localhost:xxxx
+static CORS_ORIGIN: LazyLock<String> = LazyLock::new(|| {
+    std::env::var("CORS_ORIGIN").unwrap_or("https://camperisti-p0ly.vercel.app".to_string())
+});
+// Un solo scrittore alla volta sull'archivio file (niente update persi fra thread)
+static STORE: Mutex<()> = Mutex::new(());
+// Contatori rate limiting per IP: ip -> (tentativi, inizio finestra)
+static RATE: LazyLock<Mutex<HashMap<String, (u32, u64)>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+// Hash fittizio per tempi di risposta uniformi quando l'utente non esiste
+// (niente enumeration via timing). Inizializzato all'avvio.
+static DUMMY_HASH: LazyLock<String> = LazyLock::new(|| {
+    let salt = SaltString::generate(&mut OsRng);
+    Argon2::default()
+        .hash_password(b"camperisti-dummy-fallback", &salt)
+        .map(|h| h.to_string())
+        .unwrap_or_default()
+});
+
+fn now_secs() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0)
+}
+
+// NOTA produzione: esporre solo dietro reverse proxy con TLS (es. Caddy/Nginx),
+// BIND_ADDR=127.0.0.1 di default, backup periodico di backend/data/, HSTS sul proxy.
+// Argon2id + salt CSPRNG per le password, token 256 bit da OsRng.
 
 fn data_dir() -> PathBuf {
     let mut p = std::env::current_dir().unwrap_or(PathBuf::from("."));
@@ -43,13 +79,83 @@ fn esc(s: &str) -> String {
 }
 
 fn send(stream: &mut TcpStream, status: &str, body: &str) {
+    send_extra(stream, status, body, "");
+}
+
+fn send_extra(stream: &mut TcpStream, status: &str, body: &str, extra: &str) {
     let resp = format!(
-        "{}\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+        "{}\r\nAccess-Control-Allow-Origin: {}\r\nVary: Origin\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\nX-Content-Type-Options: nosniff\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n{}\r\n{}",
         status,
+        *CORS_ORIGIN,
         body.as_bytes().len(),
+        extra,
         body
     );
     let _ = stream.write_all(resp.as_bytes());
+}
+
+// Scrittura atomica: tmp + rename (mai file troncati ai lettori)
+static TMP_CTR: AtomicUsize = AtomicUsize::new(0);
+
+fn atomic_write(path: &PathBuf, data: &str) -> bool {
+    let tmp = path.with_extension(format!(
+        "tmp.{}-{}",
+        std::process::id(),
+        TMP_CTR.fetch_add(1, Ordering::SeqCst)
+    ));
+    if fs::write(&tmp, data).is_err() {
+        return false;
+    }
+    fs::rename(&tmp, path).is_ok()
+}
+
+fn with_store<T>(f: impl FnOnce() -> T) -> T {
+    let _g = STORE.lock().unwrap();
+    f()
+}
+
+// Rate limiting per IP (tentativi auth)
+fn rate_ok(ip: &str) -> bool {
+    let now = now_secs();
+    let mut m = RATE.lock().unwrap();
+    if m.len() > 5000 {
+        m.retain(|_, &mut (_, t)| now.saturating_sub(t) < AUTH_WINDOW_SECS);
+    }
+    let e = m.entry(ip.to_string()).or_insert((0, now));
+    if now.saturating_sub(e.1) >= AUTH_WINDOW_SECS {
+        *e = (0, now);
+    }
+    if e.0 >= AUTH_LIMIT {
+        return false;
+    }
+    e.0 += 1;
+    true
+}
+
+fn valid_email(s: &str) -> bool {
+    if s.len() < 3 || s.len() > 254 {
+        return false;
+    }
+    if s.bytes().any(|b| b <= 32 || b == 127) {
+        return false;
+    }
+    if s.contains(['"', '\\']) {
+        return false;
+    }
+    let mut parts = s.split('@');
+    match (parts.next(), parts.next(), parts.next()) {
+        (Some(l), Some(d), None) => !l.is_empty() && d.contains('.') && !d.starts_with('.') && !d.ends_with('.'),
+        _ => false,
+    }
+}
+
+fn valid_pass(s: &str) -> bool {
+    let n = s.chars().count();
+    n >= 8 && n <= 128
+}
+
+fn valid_nome(s: &str) -> bool {
+    s.chars().count() <= 80
 }
 
 fn pct_decode(s: &str) -> String {
@@ -86,7 +192,7 @@ fn get_query(path: &str, key: &str) -> Option<String> {
     None
 }
 
-// estrae "campo":"valore" dal body json (parser minimale per payload noti)
+// estrae "campo":"valore" dal body json (rispetta i backslash dentro le stringhe)
 fn jval(body: &str, key: &str) -> String {
     let pat = format!("\"{}\"", key);
     let Some(i) = body.find(&pat) else { return String::new() };
@@ -94,10 +200,7 @@ fn jval(body: &str, key: &str) -> String {
     let Some(c) = rest.find(':') else { return String::new() };
     let v = rest[c + 1..].trim_start();
     if let Some(stripped) = v.strip_prefix('"') {
-        if let Some(end) = stripped.find('"') {
-            return stripped[..end].to_string();
-        }
-        return String::new();
+        return take_quoted(stripped);
     }
     let end = v.find(&[',', '}', '\n'][..]).unwrap_or(v.len());
     v[..end].trim().trim_matches('"').to_string()
@@ -212,71 +315,72 @@ fn extract_record(users: &str, email: &str) -> Option<String> {
     Some(users[start..end].to_string())
 }
 
-// verifica email+hash APPAIATI nello stesso record (mai separati)
-fn check_user(users: &str, email: &str, hash: &str) -> Option<String> {
-    let rec = extract_record(users, email)?;
-    if !rec.contains(&format!("\"hash\":\"{}\"", hash)) {
-        return None;
+// verifica email+password: hash APPAIATI nello stesso record (mai separati).
+// Se l'utente non esiste, verifica comunque contro un hash fittizio
+// (tempi di risposta uniformi, niente enumeration via timing).
+fn check_user(users: &str, email: &str, pass: &str) -> Option<String> {
+    match extract_record(users, email) {
+        Some(rec) => {
+            let hash = rec.split("\"hash\":\"").nth(1).map(take_quoted).unwrap_or_default();
+            if hash.is_empty() || !pw_verify(&hash, pass) {
+                return None;
+            }
+            Some(rec.split("\"nome\":\"").nth(1).map(take_quoted).unwrap_or_default())
+        }
+        None => {
+            let _ = pw_verify(&DUMMY_HASH, pass);
+            None
+        }
     }
-    let nome = rec
-        .split("\"nome\":\"")
-        .nth(1)
-        .map(take_quoted)
-        .unwrap_or_default();
-    Some(nome)
 }
 
 fn put_user(email: &str, nome: &str, hash: &str) -> bool {
-    let fp = data_dir().join("users.json");
-    let mut users = load_users();
-    if users.contains(&format!("\"{}\":", esc(email))) {
+    with_store(|| {
+        let fp = data_dir().join("users.json");
+        let users = load_users();
+        if users.contains(&format!("\"{}\":", esc(email))) {
+            return false;
+        }
+        let entry = format!("\"{}\":{{\"nome\":\"{}\",\"hash\":\"{}\"}}", esc(email), esc(nome), hash);
+        let next = if users.contains("\"users\":{}") {
+            users.replacen("\"users\":{}", &format!("\"users\":{{{}}}", entry), 1)
+        } else if users.rfind("}}").is_some() {
+            // inserisce prima delle ultime due graffe
+            let inner = users.rfind("}}").unwrap();
+            let mut s = users.clone();
+            s.insert_str(inner, &format!(",{}", entry));
+            s
+        } else {
+            format!("{{\"users\":{{{}}}}}", entry)
+        };
+        atomic_write(&fp, &next)
+    })
+}
+
+// Argon2id con salt CSPRNG (formato PHC). Verifica a tempo costante via crate.
+fn pw_hash(pass: &str) -> Option<String> {
+    let salt = SaltString::generate(&mut OsRng);
+    Argon2::default()
+        .hash_password(pass.as_bytes(), &salt)
+        .map(|h| h.to_string())
+        .ok()
+}
+
+fn pw_verify(stored: &str, pass: &str) -> bool {
+    let Ok(h) = PasswordHash::new(stored) else {
         return false;
-    }
-    let entry = format!("\"{}\":{{\"nome\":\"{}\",\"hash\":\"{}\"}}", esc(email), esc(nome), hash);
-    users = if users.contains("\"users\":{}") {
-        users.replacen("\"users\":{}", &format!("\"users\":{{{}}}", entry), 1)
-    } else if let Some(pos) = users.rfind('}') {
-        // chiudi oggetto annidato: inserisci prima delle ultime due graffe
-        let inner = users.rfind("}}").unwrap_or(pos);
-        let mut s = users.clone();
-        s.insert_str(inner, &format!(",{}", entry));
-        s
-    } else {
-        format!("{{\"users\":{{{}}}}}", entry)
     };
-    fs::write(&fp, users).is_ok()
+    Argon2::default().verify_password(pass.as_bytes(), &h).is_ok()
 }
 
-fn pw_hash(pass: &str, salt: &str) -> String {
-    let mut h = DefaultHasher::new();
-    format!("{}::{}", salt, pass).hash(&mut h);
-    format!("{:016x}", h.finish())
-}
-
-fn new_token(email: &str) -> String {
-    static CTR: AtomicUsize = AtomicUsize::new(0);
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_nanos())
-        .unwrap_or(0);
-    // demo-grade: nessun CSPRNG in std. Non esporre su Internet senza argon2/TLS.
-    let mut h = DefaultHasher::new();
-    (
-        nanos,
-        CTR.fetch_add(1, Ordering::SeqCst),
-        std::process::id(),
-        format!("{:?}", std::thread::current().id()),
-        email,
-    )
-        .hash(&mut h);
-    let a = h.finish();
-    let mut h2 = DefaultHasher::new();
-    (a, nanos ^ 0x9e3779b97f4a7c15, email.len()).hash(&mut h2);
-    format!("{:016x}{:016x}", a, h2.finish())
+// Token 256 bit da CSPRNG di sistema
+fn new_token() -> String {
+    let b: [u8; 32] = rand::random();
+    b.iter().map(|x| format!("{:02x}", x)).collect()
 }
 
 // sessions.json: {"sessions": {"token": {"email": "...", "created": 123}}}
-// scadenza 30 giorni
+// scadenza assoluta SESSION_TTL_SECS
 fn session_email(token: &str) -> Option<String> {
     if token.is_empty() {
         return None;
@@ -296,34 +400,97 @@ fn session_email(token: &str) -> Option<String> {
         .trim()
         .parse()
         .ok()?;
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-    if now.saturating_sub(created) > 30 * 24 * 3600 {
+    if now_secs().saturating_sub(created) > SESSION_TTL_SECS {
         return None;
     }
     Some(email)
 }
 
 fn store_session(token: &str, email: &str) {
-    let fp = data_dir().join("sessions.json");
-    let mut cur = fs::read_to_string(&fp).unwrap_or("{\"sessions\":{}}".into());
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-    let entry = format!("\"{}\":{{\"email\":\"{}\",\"created\":{}}}", token, esc(email), nanos);
-    cur = if cur.contains("\"sessions\":{}") {
-        cur.replacen("\"sessions\":{}", &format!("\"sessions\":{{{}}}", entry), 1)
-    } else if let Some(inner) = cur.rfind("}}") {
-        let mut s = cur.clone();
-        s.insert_str(inner, &format!(",{}", entry));
-        s
+    with_store(|| {
+        let fp = data_dir().join("sessions.json");
+        let cur = fs::read_to_string(&fp).unwrap_or("{\"sessions\":{}}".into());
+        let entry = format!("\"{}\":{{\"email\":\"{}\",\"created\":{}}}", token, esc(email), now_secs());
+        let next = if cur.contains("\"sessions\":{}") {
+            cur.replacen("\"sessions\":{}", &format!("\"sessions\":{{{}}}", entry), 1)
+        } else if let Some(inner) = cur.rfind("}}") {
+            let mut s = cur.clone();
+            s.insert_str(inner, &format!(",{}", entry));
+            s
+        } else {
+            format!("{{\"sessions\":{{{}}}}}", entry)
+        };
+        atomic_write(&fp, &next)
+    });
+}
+
+// Rimuove il record "token":{...} con indici esatti (niente regex fragili)
+fn remove_record(text: &str, key: &str) -> Option<String> {
+    let needle = format!("\"{}\":", esc(key));
+    let ks = text.find(&needle)?;
+    let bytes = text.as_bytes();
+    let mut pos = ks + needle.len();
+    while pos < bytes.len() && bytes[pos].is_ascii_whitespace() {
+        pos += 1;
+    }
+    if bytes.get(pos) != Some(&b'{') {
+        return None;
+    }
+    let mut depth = 0usize;
+    let mut in_str = false;
+    let mut escaped = false;
+    let mut end = pos;
+    for (k, &b) in bytes[pos..].iter().enumerate() {
+        if in_str {
+            if escaped {
+                escaped = false;
+            } else if b == b'\\' {
+                escaped = true;
+            } else if b == b'"' {
+                in_str = false;
+            }
+        } else if b == b'"' {
+            in_str = true;
+        } else if b == b'{' {
+            depth += 1;
+        } else if b == b'}' {
+            depth -= 1;
+            if depth == 0 {
+                end = pos + k + 1;
+                break;
+            }
+        }
+    }
+    if depth != 0 {
+        return None;
+    }
+    // allarga alla virgola adiacente per non lasciare "{}" sporchi
+    let mut a = ks;
+    let mut b = end;
+    let before: String = text[..ks].chars().rev().take_while(|c| c.is_whitespace()).collect();
+    let _ = before;
+    if end < text.len() && text[end..].starts_with(',') {
+        b = end + 1;
     } else {
-        format!("{{\"sessions\":{{{}}}}}", entry)
-    };
-    let _ = fs::write(&fp, cur);
+        let prev = text[..ks].trim_end();
+        if prev.ends_with(',') {
+            a = ks - (text[..ks].len() - prev.len()) - 1;
+        }
+    }
+    let mut s = text.to_string();
+    s.replace_range(a..b, "");
+    Some(s)
+}
+
+fn remove_session(token: &str) -> bool {
+    with_store(|| {
+        let fp = data_dir().join("sessions.json");
+        let cur = fs::read_to_string(&fp).unwrap_or("{\"sessions\":{}}".into());
+        match remove_record(&cur, token) {
+            Some(next) => atomic_write(&fp, &next),
+            None => false,
+        }
+    })
 }
 
 fn safe_email(email: &str) -> String {
@@ -419,21 +586,40 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
     }
 
     let dd = data_dir();
+    let peer = stream
+        .peer_addr()
+        .map(|a| a.ip().to_string())
+        .unwrap_or("?".to_string());
+
+    // rate limiting su tutte le rotte auth
+    let is_auth = path.starts_with("/api/auth/") && method == "POST";
+    if is_auth && !rate_ok(&peer) {
+        send_extra(
+            &mut stream,
+            "HTTP/1.1 429 Too Many Requests",
+            r#"{"error":"troppi tentativi, riprova fra un minuto"}"#,
+            "Retry-After: 60\r\n",
+        );
+        return Ok(());
+    }
 
     if path == "/api/auth/register" && method == "POST" {
         let email = jval(&body_s, "email").to_lowercase();
         let pass = jval(&body_s, "pass");
         let nome = jval(&body_s, "nome");
-        if email.is_empty() || pass.len() < 4 {
-            send(&mut stream, "HTTP/1.1 400 Bad Request", r#"{"error":"email e password (min 4) obbligatorie"}"#);
+        if !valid_email(&email) || !valid_pass(&pass) || !valid_nome(&nome) {
+            send(&mut stream, "HTTP/1.1 400 Bad Request", r#"{"error":"email non valida, password min 8 caratteri, nome max 80"}"#);
             return Ok(());
         }
-        let h = pw_hash(&pass, &email);
+        let Some(h) = pw_hash(&pass) else {
+            send(&mut stream, "HTTP/1.1 500 Internal Server Error", r#"{"error":"errore interno"}"#);
+            return Ok(());
+        };
         if !put_user(&email, &nome, &h) {
             send(&mut stream, "HTTP/1.1 409 Conflict", r#"{"error":"utente già registrato"}"#);
             return Ok(());
         }
-        let tok = new_token(&email);
+        let tok = new_token();
         store_session(&tok, &email);
         let out = format!(
             "{}\"ok\":true,\"email\":\"{}\",\"nome\":\"{}\",\"token\":\"{}\"{}",
@@ -446,11 +632,14 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
     if path == "/api/auth/login" && method == "POST" {
         let email = jval(&body_s, "email").to_lowercase();
         let pass = jval(&body_s, "pass");
+        if !valid_email(&email) || pass.is_empty() || pass.len() > 128 {
+            send(&mut stream, "HTTP/1.1 400 Bad Request", r#"{"error":"richiesta non valida"}"#);
+            return Ok(());
+        }
         let users = load_users();
-        let h = pw_hash(&pass, &email);
-        match check_user(&users, &email, &h) {
+        match check_user(&users, &email, &pass) {
             Some(nome) => {
-                let tok = new_token(&email);
+                let tok = new_token();
                 store_session(&tok, &email);
                 let out = format!(
                     "{}\"ok\":true,\"email\":\"{}\",\"nome\":\"{}\",\"token\":\"{}\"{}",
@@ -459,6 +648,16 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
                 send(&mut stream, "HTTP/1.1 200 OK", &out);
             }
             None => send(&mut stream, "HTTP/1.1 401 Unauthorized", r#"{"error":"credenziali non valide"}"#),
+        }
+        return Ok(());
+    }
+
+    if path == "/api/auth/logout" && method == "POST" {
+        let tok = bearer(&headers);
+        if tok.is_empty() || !remove_session(&tok) {
+            send(&mut stream, "HTTP/1.1 401 Unauthorized", r#"{"error":"sessione richiesta"}"#);
+        } else {
+            send(&mut stream, "HTTP/1.1 200 OK", r#"{"ok":true}"#);
         }
         return Ok(());
     }
@@ -484,9 +683,10 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
         } else if method == "POST" {
             if body_s.len() > (1 << 20) {
                 send(&mut stream, "HTTP/1.1 413 Payload Too Large", r#"{"error":"payload troppo grande"}"#);
-            } else {
-                let _ = fs::write(&fp, &body_s);
+            } else if with_store(|| atomic_write(&fp, &body_s)) {
                 send(&mut stream, "HTTP/1.1 200 OK", r#"{"ok":true}"#);
+            } else {
+                send(&mut stream, "HTTP/1.1 500 Internal Server Error", r#"{"error":"salvataggio non riuscito"}"#);
             }
         } else {
             send(&mut stream, "HTTP/1.1 405 Method Not Allowed", r#"{"error":"metodo non supportato"}"#);
@@ -499,9 +699,13 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
 }
 
 fn main() {
-    let addr = "127.0.0.1:3001";
-    let listener = TcpListener::bind(addr).expect("bind 3001");
-    println!("Camperisti backend attivo su http://{} (solo locale)", addr);
+    // Bind solo locale di default; per Internet: reverse proxy con TLS davanti,
+    // mai esporre questo socket direttamente (niente TLS integrato di proposito).
+    let addr = std::env::var("BIND_ADDR").unwrap_or("127.0.0.1:3001".to_string());
+    LazyLock::force(&DUMMY_HASH);
+    LazyLock::force(&CORS_ORIGIN);
+    let listener = TcpListener::bind(&addr).expect("bind");
+    println!("Camperisti backend attivo su http://{} (CORS: {})", addr, *CORS_ORIGIN);
     println!("API: /api/health /api/areas /api/auth/* /api/favorites /api/trips (Bearer)");
     for s in listener.incoming() {
         if let Ok(st) = s {

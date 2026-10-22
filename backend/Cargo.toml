@@ -1,7 +1,10 @@
 [package]
 name = "camperisti-backend"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
-# zero dipendenze esterne: solo std, costo zero, build immediata
+# Dipendenze minime e auditate, solo per sicurezza reale:
+# argon2 = password hashing (raccomandazione OWASP), rand = token CSPRNG e salt
 [dependencies]
+argon2 = "0.5"
+rand = "0.8"
