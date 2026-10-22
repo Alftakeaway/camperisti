@@ -5,12 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Camperisti — Campania · Lazio · Sardegna · Sicilia</title>
 <meta name="description" content="Aree sosta, campeggi, agricampeggi, service e officine camper in Campania, Lazio, Sardegna e Sicilia. Itinerari, login e salvataggi.">
+<meta name="theme-color" content="#0d1512">
+<link rel="canonical" href="https://camperisti-p0ly.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Camperisti">
+<meta property="og:title" content="Camperisti — Campania · Lazio · Sardegna · Sicilia">
+<meta property="og:description" content="Aree sosta, campeggi, service e officine camper + itinerari. Catalogo in verifica, salvataggi gratuiti.">
+<meta property="og:url" content="https://camperisti-p0ly.vercel.app/">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Camperisti","url":"https://camperisti-p0ly.vercel.app/","inLanguage":"it","description":"Aree sosta e itinerari in camper in Campania, Lazio, Sardegna e Sicilia."}
+</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#grid">Salta ai risultati</a>
 <header class="topbar">
   <div class="brand"><span class="logo">◈</span> Camperisti <em>beta</em></div>
-  <nav>
+  <nav aria-label="Sezioni">
     <button data-nav="esplora" class="active">Esplora</button>
     <button data-nav="itinerari">Itinerari</button>
     <button data-nav="dashboard">I miei viaggi</button>
@@ -26,11 +38,13 @@
 <section class="hero">
   <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
   <div class="hero-inner">
-    <p class="kicker reveal">Campania · Lazio · Sardegna · Sicilia — costo zero, dati verificati</p>
+    <p class="kicker reveal">Campania · Lazio · Sardegna · Sicilia — catalogo in verifica, gratis</p>
     <h1 class="reveal">Dormi bene.<br><span class="grad">Viaggia libero.</span></h1>
     <p class="sub reveal">Aree sosta, campeggi, agricampeggi, parcheggi adatti, camper service e officine. Salva i tuoi posti e costruisci itinerari.</p>
     <div class="searchrow reveal">
-      <input id="q" type="search" placeholder="Cerca: Sorrento, Bolsena, Alghero, Etna, service…">
+      <label class="vh" for="q">Cerca strutture</label>
+      <input id="q" type="search" placeholder="Cerca ovunque: Alghero, Bolsena, Etna, service…">
+      <label class="vh" for="fTipo">Tipo di struttura</label>
       <select id="fTipo">
         <option value="">Tutti i tipi</option>
         <option value="area_sosta">Aree sosta</option>
@@ -40,6 +54,17 @@
         <option value="service">Camper service</option>
         <option value="officina">Officine / noleggi</option>
       </select>
+    </div>
+    <div class="qchips reveal" role="group" aria-label="Filtri rapidi servizi">
+      <button data-qf="acqua" aria-pressed="false">acqua</button>
+      <button data-qf="scarico" aria-pressed="false">scarico</button>
+      <button data-qf="luce" aria-pressed="false">luce</button>
+      <button data-qf="docce" aria-pressed="false">docce</button>
+      <button data-qf="wifi" aria-pressed="false">wifi</button>
+      <button data-qf="mare" aria-pressed="false">mare</button>
+      <button data-qf="pet" aria-pressed="false">pet</button>
+      <button data-qf="ombra" aria-pressed="false">ombra</button>
+      <button data-qf="service" aria-pressed="false">service</button>
     </div>
     <div class="regions reveal" id="regionTabs">
       <button data-reg="campania" class="active">Campania</button>
@@ -129,17 +154,21 @@
   </section>
 </main>
 
-<div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
+<div id="modal" class="modal hidden"><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
 <div id="authModal" class="modal hidden">
-  <div class="sheet small">
-    <h3>Accedi / Registrati</h3>
-    <p class="muted">Gratis, senza carta. I dati restano sul tuo dispositivo + backend locale Rust se attivo.</p>
-    <input id="aNome" placeholder="Nome (solo registrazione)">
-    <input id="aEmail" placeholder="Email" type="email">
-    <input id="aPass" placeholder="Password" type="password">
+  <div class="sheet small" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <h3 id="authTitle">Accedi / Registrati</h3>
+    <p class="muted">Gratis, senza carta. <b>Ospite</b>: nessuna password, solo questo dispositivo. <b>Dispositivo</b>: demo locale. <b>Backend</b>: sincronizzato, solo se il server è attivo.</p>
+    <label for="aNome">Nome (solo registrazione)</label>
+    <input id="aNome" placeholder="Nome (solo registrazione)" autocomplete="nickname">
+    <label for="aEmail">Email</label>
+    <input id="aEmail" placeholder="Email" type="email" autocomplete="email">
+    <label for="aPass">Password</label>
+    <input id="aPass" placeholder="Password" type="password" autocomplete="current-password">
     <div class="row">
       <button class="btn primary" id="doLogin">Accedi</button>
       <button class="btn ghost" id="doReg">Registrati</button>
+      <button class="btn ghost" id="guestBtn">Ospite</button>
       <button class="btn ghost" id="closeAuth">Chiudi</button>
     </div>
     <p id="authMsg" class="muted"></p>
@@ -148,7 +177,7 @@
 <div id="toast" class="toast hidden"></div>
 
 <footer>
-  <p>Camperisti beta — dati verificati ott 2026, <b>riconferma sempre telefono e prezzi prima di partire</b>. *Free: consultazione e salvataggi locali sempre gratuiti.</p>
+  <p>Camperisti beta — catalogo in verifica: <b>riconferma sempre telefono e prezzi prima di partire</b>. *Free: consultazione e salvataggi locali sempre gratuiti.</p>
 </footer>
 
 <script src="app.js"></script>

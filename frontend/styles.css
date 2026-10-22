@@ -70,4 +70,38 @@ input,textarea,select{font:inherit}
 footer{padding:26px 20px;color:var(--mut);text-align:center;border-top:1px solid var(--line);margin-top:30px}
 code{background:#0f1a16;padding:2px 6px;border-radius:6px}
 .view h2{margin:6px 0}
-@media(max-width:640px){.topbar nav{display:none}.stats{gap:14px}}
+@media(max-width:640px){
+  .topbar{flex-wrap:wrap}
+  .topbar nav{display:flex;order:3;width:100%;overflow-x:auto;gap:4px;padding-bottom:2px}
+  .topbar nav button{white-space:nowrap;padding:8px 10px}
+  .stats{gap:14px}
+  .hero{padding:30px 14px 0}
+  h1{font-size:34px}
+}
+/* hero compatta nelle sezioni operative */
+body.ops .hero{padding:18px 14px 0}
+body.ops h1{font-size:26px}
+body.ops .sub,body.ops .stats,body.ops .marquee{display:none}
+body.ops .hero-inner{margin-bottom:12px}
+/* utilità accesso */
+.skip{position:absolute;left:-999px;top:0;background:var(--acc);color:#111;padding:8px 14px;border-radius:0 0 10px 0;z-index:99}
+.skip:focus{left:0}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+/* chip filtri rapidi */
+.qchips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0 0 12px}
+.qchips button{padding:7px 13px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--mut);cursor:pointer;font-size:13px}
+.qchips button.active{background:var(--acc2);border-color:var(--acc2);color:#06281c;font-weight:800}
+/* badge stato catalogo */
+.badge.ok{color:var(--acc2)}
+.badge.warn{color:var(--acc)}
+/* viaggi */
+.trip{background:#0f1a16;border:1px solid var(--line);padding:10px;border-radius:10px;margin-bottom:8px}
+.trip select{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px;max-width:100%}
+.mover{margin-left:auto;display:flex;gap:4px}
+.mover .btn{padding:4px 8px}
+/* movimento ridotto */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .marquee .track{animation:none;white-space:normal}
+}

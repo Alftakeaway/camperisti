@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://camperisti-p0ly.vercel.app/sitemap.xml
