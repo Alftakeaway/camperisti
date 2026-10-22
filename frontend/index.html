@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camperisti — Campania · Lazio · Sardegna · Sicilia</title>
+<meta name="description" content="Aree sosta, campeggi, agricampeggi, service e officine camper in Campania, Lazio, Sardegna e Sicilia. Itinerari, login e salvataggi.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">◈</span> Camperisti <em>beta</em></div>
+  <nav>
+    <button data-nav="esplora" class="active">Esplora</button>
+    <button data-nav="itinerari">Itinerari</button>
+    <button data-nav="dashboard">I miei viaggi</button>
+    <button data-nav="extra">Strumenti</button>
+  </nav>
+  <div class="authbox">
+    <span id="userLabel" class="hidden"></span>
+    <button id="authBtn" class="btn ghost">Accedi</button>
+    <button id="logoutBtn" class="btn ghost hidden">Esci</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="hero-inner">
+    <p class="kicker reveal">Campania · Lazio · Sardegna · Sicilia — costo zero, dati verificati</p>
+    <h1 class="reveal">Dormi bene.<br><span class="grad">Viaggia libero.</span></h1>
+    <p class="sub reveal">Aree sosta, campeggi, agricampeggi, parcheggi adatti, camper service e officine. Salva i tuoi posti e costruisci itinerari.</p>
+    <div class="searchrow reveal">
+      <input id="q" type="search" placeholder="Cerca: Sorrento, Bolsena, Alghero, Etna, service…">
+      <select id="fTipo">
+        <option value="">Tutti i tipi</option>
+        <option value="area_sosta">Aree sosta</option>
+        <option value="campeggio">Campeggi</option>
+        <option value="agricampeggio">Agricampeggi</option>
+        <option value="parcheggio">Parcheggi adatti</option>
+        <option value="service">Camper service</option>
+        <option value="officina">Officine / noleggi</option>
+      </select>
+    </div>
+    <div class="regions reveal" id="regionTabs">
+      <button data-reg="campania" class="active">Campania</button>
+      <button data-reg="lazio">Lazio</button>
+      <button data-reg="sardegna">Sardegna</button>
+      <button data-reg="sicilia">Sicilia</button>
+    </div>
+    <div class="stats reveal">
+      <div><b id="statStrutture">0</b><span>strutture</span></div>
+      <div><b id="statItin">0</b><span>itinerari</span></div>
+      <div><b>4</b><span>regioni</span></div>
+      <div><b>0€</b><span>per sempre free*</span></div>
+    </div>
+  </div>
+  <div class="marquee"><div class="track" id="marqueeTrack"></div></div>
+</section>
+
+<main>
+  <section id="view-esplora" class="view">
+    <div class="bar">
+      <p id="count"></p>
+      <label class="chk"><input type="checkbox" id="onlyFavs"> Solo salvati ♥</label>
+    </div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <section id="view-itinerari" class="view hidden">
+    <h2>Itinerari consigliati</h2>
+    <p class="muted">12 tracce pronte, costruite sulle strutture qui sopra. Aprili, salvane le tappe e adattale nel tuo viaggio.</p>
+    <div id="itinGrid" class="grid"></div>
+  </section>
+
+  <section id="view-dashboard" class="view hidden">
+    <h2>I miei viaggi <span class="pill">login gratuito</span></h2>
+    <div id="dashLock" class="card lock">
+      <p>Accedi per salvare preferiti, note e itinerari su questo dispositivo — e sul backend Rust quando è attivo.</p>
+      <button class="btn primary" onclick="openAuth()">Accedi / Registrati</button>
+    </div>
+    <div id="dashBody" class="hidden">
+      <div class="cols">
+        <div class="card">
+          <h3>♥ Salvati <span id="favCount"></span></h3>
+          <div id="favList" class="stack"></div>
+        </div>
+        <div class="card">
+          <h3>Il mio itinerario</h3>
+          <input id="tripName" placeholder="Nome viaggio, es. Sicilia Ovest agosto">
+          <textarea id="tripNotes" placeholder="Note: altezza mezzo, cane, budget…"></textarea>
+          <div class="row">
+            <button class="btn primary" id="saveTrip">Salva viaggio</button>
+            <button class="btn ghost" id="exportGpx">Esporta GPX</button>
+            <button class="btn ghost" id="exportTxt">Esporta testo</button>
+          </div>
+          <div id="tripList" class="stack"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-extra" class="view hidden">
+    <h2>Strumenti utili</h2>
+    <div class="cols">
+      <div class="card">
+        <h3>✓ Checklist partenza</h3>
+        <div id="checklist" class="stack"></div>
+        <button class="btn ghost" id="resetCheck">Azzera</button>
+      </div>
+      <div class="card">
+        <h3>€ Stima costi sosta</h3>
+        <label>Notti <input type="number" id="cNotti" value="7" min="1"></label>
+        <label>€ / notte <input type="number" id="cPrezzo" value="25" min="0"></label>
+        <label>Carburante stimato € <input type="number" id="cFuel" value="150" min="0"></label>
+        <p class="total">Totale: <b id="cTot">—</b></p>
+      </div>
+      <div class="card premium">
+        <h3>★ Premium — in arrivo</h3>
+        <ul>
+          <li>Offline mappe + schede per regione</li>
+          <li>Filtri pro: altezza, peso, oltre 7m, ombra, aperto a gennaio</li>
+          <li>Liste illimitate + cartelle + condivisione</li>
+          <li>Diario spese e promemoria service</li>
+          <li>Sconti strutture partner</li>
+        </ul>
+        <p class="muted">Ora è tutto gratis. Il premium sarà solo libreria extra a 24,99€/anno.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
+<div id="authModal" class="modal hidden">
+  <div class="sheet small">
+    <h3>Accedi / Registrati</h3>
+    <p class="muted">Gratis, senza carta. I dati restano sul tuo dispositivo + backend locale Rust se attivo.</p>
+    <input id="aNome" placeholder="Nome (solo registrazione)">
+    <input id="aEmail" placeholder="Email" type="email">
+    <input id="aPass" placeholder="Password" type="password">
+    <div class="row">
+      <button class="btn primary" id="doLogin">Accedi</button>
+      <button class="btn ghost" id="doReg">Registrati</button>
+      <button class="btn ghost" id="closeAuth">Chiudi</button>
+    </div>
+    <p id="authMsg" class="muted"></p>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<footer>
+  <p>Camperisti beta — dati verificati ott 2026, <b>riconferma sempre telefono e prezzi prima di partire</b>. *Free: consultazione e salvataggi locali sempre gratuiti.</p>
+  <p class="muted">Backend Rust su <code>http://127.0.0.1:3001</code> — avvia con <code>cargo run</code> in <code>backend/</code>. Senza backend il sito funziona comunque in locale.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

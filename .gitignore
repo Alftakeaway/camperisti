@@ -1,0 +1,4 @@
+/backend/target/
+/backend/data/
+node_modules/
+.vercel/

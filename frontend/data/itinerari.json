@@ -1,0 +1,14 @@
+[
+  {"id":"it-cam-1","regione":"campania","titolo":"Napoli – Campi Flegrei – Pompei – Sorrento (3-4gg)","tappe":["Sosta Camaldoli Napoli","Castagnaro Pozzuoli","Terrazza Hermès Pompei","Nube d'Argento Sorrento"],"km":"~120","note":"Costiera solo bus/barca, no camper in alta stagione"},
+  {"id":"it-cam-2","regione":"campania","titolo":"Salerno – Paestum – Cilento nord (4-5gg)","tappe":["Lungomare Salerno","Camper Stop Pontecagnano","Nettuno Paestum","Trentova Agropoli"],"km":"~110","note":"Campo base Pontecagnano, escursioni Amalfi in barca"},
+  {"id":"it-cam-3","regione":"campania","titolo":"Caserta – Cilento sud selvaggio (4-6gg)","tappe":["Feudo San Martino Caserta","Paestum","Ogliastro","Marina di Camerota","Policastro"],"km":"~230","note":"Reggia + mare selvaggio"},
+  {"id":"it-laz-1","regione":"lazio","titolo":"Roma + Castelli (3-4gg base fissa)","tappe":["Area Romae","Castel Gandolfo lago","Nemi","Il Noceto Cave"],"km":"~90","note":"Camper fermo, muoviti con bus/metro"},
+  {"id":"it-laz-2","regione":"lazio","titolo":"Tuscia e laghi (4-5gg)","tappe":["Bracciano Roma Flash","Sutri Pinseria","Viterbo Biososta","Bolsena Guadetto"],"km":"~150","note":"Terme + borghi, non entrare a Civita con >6m"},
+  {"id":"it-laz-3","regione":"lazio","titolo":"Litorale sud (4-6gg)","tappe":["Sabaudia Mizzon","CirceMed","Sperlonga","Quirino Gaeta"],"km":"~120","note":"Flacca stretta, prezzi 20→45€ in agosto"},
+  {"id":"it-sar-1","regione":"sardegna","titolo":"Sud Sulcis-Iglesiente (5-7gg)","tappe":["Elmas service","Castiadas Ulivi","Porto Pino Ruscello","Sant'Antioco Tonnara"],"km":"~220","note":"Spiagge lunghe + miniere"},
+  {"id":"it-sar-2","regione":"sardegna","titolo":"Est + Barbagia (7-9gg)","tappe":["Olbia","Tavolara Camping","Orosei Osalla","Dorgali Paulesa","Barisardo","Ollolai Costiolu"],"km":"~350","note":"AMP + Gorropu + Gennargentu"},
+  {"id":"it-sar-3","regione":"sardegna","titolo":"Nord-ovest (7gg)","tappe":["Cannigione","Palau/Maddalena","Oasi Gallura","Alghero Paradise","Bosa","Sinis Spinnaker"],"km":"~380","note":"Arcipelaghi + Capo Caccia + Tharros"},
+  {"id":"it-sic-1","regione":"sicilia","titolo":"Ovest (7gg)","tappe":["Palermo Green Car","Cefalù Sanfilippo","S.Vito El Bahira","Saline Isola Sale","Scala Turchi","Valle Templi"],"km":"~450","note":"Città + Zingaro + Egadi in traghetto"},
+  {"id":"it-sic-2","regione":"sicilia","titolo":"Est Barocco+Etna (7gg)","tappe":["Catania Sicily Park","Siracusa Claud Car","Noto Vendicari","Ragusa Luminoso","Etna Spuligni","Taormina Lagani"],"km":"~380","note":"Barocco + mare + vulcano"},
+  {"id":"it-sic-3","regione":"sicilia","titolo":"Giro completo (12-14gg)","tappe":["Palermo","Cefalù","Taormina","Etna","Catania","Siracusa","Noto","Ragusa","Agrigento","Trapani","S.Vito","Palermo"],"km":"~1100","note":"Anello completo, slow in agricampeggi"}
+]

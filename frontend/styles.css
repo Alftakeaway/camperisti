@@ -1,0 +1,73 @@
+:root{
+  --bg:#0d1512; --panel:#14201b; --card:#182723; --line:#2a3d35;
+  --ink:#eef5ef; --mut:#9db3a8; --acc:#ffb347; --acc2:#37d99a; --grad:linear-gradient(90deg,#ffb347,#ff6b6b,#37d99a);
+  --r:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(13,21,18,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:.3px}.brand .logo{color:var(--acc)}.brand em{font-style:normal;font-size:11px;background:var(--acc);color:#222;border-radius:99px;padding:2px 8px;margin-left:6px}
+.topbar nav{display:flex;gap:6px;margin-left:8px}
+.topbar nav button{background:transparent;border:1px solid transparent;color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer}
+.topbar nav button.active,.topbar nav button:hover{border-color:var(--line);background:var(--panel)}
+.authbox{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 14px;border-radius:12px;cursor:pointer;transition:transform .18s ease,box-shadow .18s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.btn.primary{background:var(--grad);border:none;color:#14110a;font-weight:800}
+.btn.ghost{background:transparent}
+.hidden{display:none!important}
+.hero{position:relative;overflow:hidden;padding:56px 20px 0;border-bottom:1px solid var(--line)}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 12s ease-in-out infinite alternate}
+.b1{width:420px;height:420px;background:#ff6b6b55;left:-120px;top:-120px}
+.b2{width:520px;height:520px;background:#37d99a44;right:-160px;top:-80px;animation-delay:-4s}
+.b3{width:300px;height:300px;background:#ffb34755;left:40%;bottom:-160px;animation-delay:-8s}
+@keyframes drift{to{transform:translate(60px,40px) scale(1.15)}}
+.hero-inner{position:relative;max-width:1020px;margin:0 auto;text-align:center}
+.kicker{color:var(--acc);font-weight:700;letter-spacing:.4px}
+h1{font-size:clamp(38px,6vw,68px);line-height:1.02;margin:8px 0}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);max-width:720px;margin:0 auto}
+.searchrow{display:flex;gap:8px;justify-content:center;margin:20px 0;flex-wrap:wrap}
+.searchrow input,.searchrow select{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:12px 14px;border-radius:12px;min-width:260px}
+.regions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.regions button{padding:10px 18px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font-weight:700;transition:all .2s}
+.regions button.active{background:var(--ink);color:#111}
+.stats{display:flex;gap:26px;justify-content:center;margin:22px 0 30px}
+.stats div{display:flex;flex-direction:column}.stats b{font-size:22px}.stats span{color:var(--mut);font-size:12px}
+.marquee{border-top:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:10px 0;color:var(--mut)}
+.marquee .track{display:inline-block;animation:scroll 30s linear infinite}
+@keyframes scroll{to{transform:translateX(-50%)}}
+main{max-width:1080px;margin:0 auto;padding:20px}
+.bar{display:flex;align-items:center;justify-content:space-between;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;transition:transform .2s,box-shadow .2s;animation:pop .35s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.card h3{margin:0 0 4px;font-size:17px}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:#24382f;border:1px solid var(--line);color:var(--acc2);margin-right:6px;text-transform:uppercase;letter-spacing:.4px}
+.badge.officina{color:var(--acc)}.badge.service{color:#7cc7ff}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chips span{font-size:12px;background:#0f1a16;border:1px solid var(--line);padding:3px 8px;border-radius:99px;color:var(--mut)}
+.price{color:var(--acc);font-weight:800}
+.muted{color:var(--mut)}.small{font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.stack{display:flex;flex-direction:column;gap:8px}
+.favrow{display:flex;align-items:center;gap:8px;background:#0f1a16;border:1px solid var(--line);padding:8px 10px;border-radius:10px}
+.favrow button{margin-left:auto}
+input,textarea,select{font:inherit}
+.card input,.card textarea,.sheet input,.sheet textarea{width:100%;background:#0f1a16;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;margin:6px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:20px 20px 0 0;max-width:720px;width:100%;padding:20px;max-height:88vh;overflow:auto;animation:up .28s ease}
+.sheet.small{max-width:420px;border-radius:20px;margin-bottom:10vh}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#111;padding:10px 16px;border-radius:99px;font-weight:700;z-index:99}
+.reveal{animation:pop .5s ease both}
+.lock{text-align:center}
+.pill{font-size:11px;background:var(--acc2);color:#06281c;border-radius:99px;padding:3px 9px}
+.premium{border-color:var(--acc)}
+.total{font-size:18px}
+footer{padding:26px 20px;color:var(--mut);text-align:center;border-top:1px solid var(--line);margin-top:30px}
+code{background:#0f1a16;padding:2px 6px;border-radius:6px}
+.view h2{margin:6px 0}
+@media(max-width:640px){.topbar nav{display:none}.stats{gap:14px}}
