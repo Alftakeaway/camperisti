@@ -15,12 +15,15 @@
       "wc",
       "wifi"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€40/notte (festività €50; >8m €50/60€; docce €1)",
+    "verificato": "2026-10-22",
     "note": "35 posti, bus per centro 5km",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.rexbus.it/area-sosta-camper-roma/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale (8:00-22:00, H24)",
+    "tel": "+39 06 7886904",
+    "sito": "https://www.rexbus.it/area-sosta-camper-roma/",
+    "sitoOk": true
   },
   {
     "id": "laz-02",
@@ -35,12 +38,13 @@
       "luce",
       "scarico"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
-    "note": "Presso carrozzeria, bus 118/218",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
+    "note": "Presso carrozzeria, bus 118/218; solo contanti",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/area-camper-saliola/9938",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale",
+    "tel": "+39 327 7011468"
   },
   {
     "id": "laz-03",
@@ -56,12 +60,15 @@
       "scarico",
       "wifi"
     ],
-    "prezzo": "~30€/24h",
-    "verificato": "2026-10",
+    "prezzo": "~€30/notte (5 notti €130; doccia €1,50)",
+    "verificato": "2026-10-22",
     "note": "Doccia 1,50€/3min",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.lgproma.com/tariffe.html",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "tutto l'anno H24",
+    "tel": "+39 06 2427518",
+    "sito": "https://www.lgproma.com/home.html",
+    "sitoOk": true
   },
   {
     "id": "laz-04",
@@ -76,12 +83,15 @@
       "luce",
       "scarico"
     ],
-    "prezzo": "~40€",
-    "verificato": "2026-10",
-    "note": "Treno centro 15min",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "prezzo": "€30/24h",
+    "verificato": "2026-10-22",
+    "note": "Treno centro 15min; WhatsApp +39 3925199095",
+    "fonte": "https://www.facebook.com/p/Area-sosta-camper-Roma-Nord-61568171024601/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 392 1645683",
+    "sito": "https://www.facebook.com/p/Area-sosta-camper-Roma-Nord-61568171024601/",
+    "sitoOk": true
   },
   {
     "id": "laz-05",
@@ -97,12 +107,15 @@
       "luce",
       "ristorante"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "note": "2 laghi pesca sportiva",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.miralagoromaest.com/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "tutto l'anno",
+    "tel": "+39 333 6585694",
+    "sito": "https://www.miralagoromaest.com/",
+    "sitoOk": true
   },
   {
     "id": "laz-06",
@@ -118,12 +131,15 @@
       "piscina",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "da booking online (preventivo)",
+    "verificato": "2026-10-22",
     "note": "Base Ostia Antica + Roma",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.baiaholiday.com/roma-capitol/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "stagionale (fino al 09/11/2026)",
+    "tel": "+39 06 20190700",
+    "sito": "https://www.baiaholiday.com/roma-capitol/",
+    "sitoOk": true
   },
   {
     "id": "laz-07",
@@ -140,11 +156,14 @@
       "orto bio"
     ],
     "prezzo": "24/30€",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "80mq ombreggiate, solo carico 12€",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://agricampeggiolabiososta.com/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 375 6351697",
+    "sito": "https://agricampeggiolabiososta.com/",
+    "sitoOk": true
   },
   {
     "id": "laz-08",
@@ -159,12 +178,15 @@
       "docce",
       "luce"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€20/notte (2 persone)",
+    "verificato": "2026-10-22",
     "note": "100 piazzole eco, tettoie FV",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.agricampeggiopaliano.com/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 393 9996039",
+    "sito": "https://www.agricampeggiopaliano.com/",
+    "sitoOk": true
   },
   {
     "id": "laz-09",
@@ -182,8 +204,8 @@
       "wifi"
     ],
     "prezzo": "da 16€",
-    "verificato": "2026-10",
-    "note": "Eventi/degustazioni",
+    "verificato": "2026-10-22",
+    "note": "Eventi/degustazioni; nessun contatto pubblicato online — verificare esistenza prima di partire",
     "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
     "stato": "da riconfermare",
     "stagione": null
@@ -203,11 +225,12 @@
       "service"
     ],
     "prezzo": "15-25€",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "20 piazzole, beach volley",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/country-bar-pinseria-gentile/11934",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 0761 600972"
   },
   {
     "id": "laz-11",
@@ -222,12 +245,15 @@
       "bagni",
       "luce"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€20 tutto l’anno (+persona €4, luce €5)",
+    "verificato": "2026-10-22",
     "note": "15 piazzole ulivi, 15min Orte",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.sosta-camper-orte.it/prezzi/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale",
+    "tel": "+39 351 7030453",
+    "sito": "https://www.sosta-camper-orte.it/",
+    "sitoOk": true
   },
   {
     "id": "laz-12",
@@ -245,11 +271,12 @@
       "scarico"
     ],
     "prezzo": "20-45€ stagione",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "Base Sperlonga/Gaeta",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.openstreetmap.org (nodo Quirino Area Sosta Camper, Gaeta)",
     "stato": "da riconfermare",
-    "stagione": "annuale"
+    "stagione": "annuale",
+    "tel": "+39 328 3736209"
   },
   {
     "id": "laz-13",
@@ -266,9 +293,9 @@
       "mare"
     ],
     "prezzo": "15/20€",
-    "verificato": "2026-10",
-    "note": "Parco Circeo, Pontine",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "verificato": "2026-10-22",
+    "note": "Esistenza confermata su Pitchup; nessun telefono/prezzo pubblicato",
+    "fonte": "https://www.pitchup.com/campsites/italy/lazio/latina/sabaudia/agricampeggio_fratelli_mizzon/",
     "stato": "da riconfermare",
     "stagione": null
   },
@@ -283,12 +310,15 @@
     "servizi": [
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "~€30/giorno",
+    "verificato": "2026-10-22",
     "note": "10.000mq, base Ponza",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.circemed.com/area-sosta-camper-caravan/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "marzo–autunno (chiusa inverno)",
+    "tel": "+39 334 9365970",
+    "sito": "https://www.circemed.com/",
+    "sitoOk": true
   },
   {
     "id": "laz-15",
@@ -303,11 +333,12 @@
       "luce"
     ],
     "prezzo": "20€ bonifico",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "14 posti, fonte Aliucci",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/area-sota-camper-la-vignola-ex-l-ardino/28438",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 389 5207422"
   },
   {
     "id": "laz-16",
@@ -323,11 +354,13 @@
       "officina"
     ],
     "prezzo": "preventivo",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "tel": "0641400133",
     "note": "Adria/Mobilvetta",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.campertecnica.it/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "sito": "https://www.campertecnica.it/",
+    "sitoOk": true
   }
 ]

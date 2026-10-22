@@ -14,11 +14,14 @@
       "service"
     ],
     "prezzo": "25€/gg",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "400m Cattedrale/Palazzo Reale",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sicilia/parking-green-car/2465",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 091 6515010",
+    "sito": "https://www.greencarpalermo.it",
+    "sitoOk": true
   },
   {
     "id": "sic-02",
@@ -32,13 +35,15 @@
       "officina",
       "sosta"
     ],
-    "prezzo": "preventivo",
-    "verificato": "2026-10",
+    "prezzo": "€20/notte (oltre 8,5m €30; elettricità extra)",
+    "verificato": "2026-10-22",
     "tel": "091542555",
     "note": "Sosta + riparazioni",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://ideavacanzepa.it/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale H24",
+    "sito": "https://ideavacanzepa.it/",
+    "sitoOk": true
   },
   {
     "id": "sic-03",
@@ -54,11 +59,14 @@
       "pet"
     ],
     "prezzo": "~23€",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "Sul mare, apr-ott",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.campingsanfilippo.com/camping",
     "stato": "da riconfermare",
-    "stagione": "apr-ott"
+    "stagione": "1 aprile – 31 ottobre",
+    "tel": "+39 0921 420184",
+    "sito": "https://www.campingsanfilippo.com/camping",
+    "sitoOk": true
   },
   {
     "id": "sic-04",
@@ -71,13 +79,15 @@
     "servizi": [
       "sosta attrezzata"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€10/giorno",
+    "verificato": "2026-10-22",
     "tel": "3279614116",
     "note": "Base città+Etna",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.sicilypark.it/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale H24",
+    "sito": "https://www.sicilypark.it/area-sosta-camper-catania/",
+    "sitoOk": true
   },
   {
     "id": "sic-05",
@@ -90,12 +100,15 @@
     "servizi": [
       "base etna sud"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "camper €10–12 + persona / Camper Stop €15–20",
+    "verificato": "2026-10-22",
     "note": "Uscita A18 Paesi Etnei",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://monsgibelcampingpark.it/listino-prezzi/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale",
+    "tel": "+39 389 8850103",
+    "sito": "https://monsgibelcampingpark.it/",
+    "sitoOk": true
   },
   {
     "id": "sic-06",
@@ -110,12 +123,15 @@
       "bbq",
       "vista etna"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€20/notte tutto compreso",
+    "verificato": "2026-10-22",
     "note": "Gestore elogiato",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://areasostaspuligni.com",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "7 gennaio – 20 dicembre",
+    "tel": "+39 328 8762525",
+    "sito": "https://areasostaspuligni.com",
+    "sitoOk": true
   },
   {
     "id": "sic-07",
@@ -130,12 +146,15 @@
       "luce",
       "scarico"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "da €20/notte",
+    "verificato": "2026-10-22",
     "note": "10 piazzole in cantina",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.campercontact.com/it/italia/sicilia/castiglione-di-sicilia/9498/area-etna-wine-agriturismo",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 095 931548",
+    "sito": "https://www.etnawineagriturismo.it/en/agricamper.html",
+    "sitoOk": false
   },
   {
     "id": "sic-08",
@@ -152,11 +171,14 @@
       "wifi"
     ],
     "prezzo": "23-35€",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "note": "23 piazzole 100mq ghiaia",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://agricampeggioalessandra.com/piazzole-camper-agricampeggio-alessandra-messina/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "365 giorni",
+    "tel": "+39 339 8780412",
+    "sito": "https://agricampeggioalessandra.com",
+    "sitoOk": true
   },
   {
     "id": "sic-09",
@@ -169,12 +191,15 @@
     "servizi": [
       "bagni"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€17–18,50/notte + €0,50/kWh",
+    "verificato": "2026-10-22",
     "note": "Base Taormina, pane/granita",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sicilia/parking-lagani/2417",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale",
+    "tel": "+39 0942 54120",
+    "sito": "http://www.parkinglagani.it",
+    "sitoOk": true
   },
   {
     "id": "sic-10",
@@ -189,12 +214,15 @@
       "navetta",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€26–35/notte (7 notti €140 bassa stagione)",
+    "verificato": "2026-10-22",
     "note": "Uscita autostradale, gestore porta in città",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.sostacamperclaudcar.com/prezzi",
     "stato": "da riconfermare",
-    "stagione": "annuale"
+    "stagione": "annuale",
+    "tel": "+39 340 5356119",
+    "sito": "https://www.sostacamperclaudcar.com",
+    "sitoOk": true
   },
   {
     "id": "sic-11",
@@ -208,13 +236,13 @@
       "ombra",
       "recintata"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€15–16/notte (+luce €3)",
+    "verificato": "2026-10-22",
     "tel": "3478587319",
     "note": "100m mare, Oasi",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://camperstop.com/it/csa/italia/sicilia/noto/parcheggio-calamosche/13330",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "1 giugno – 30 settembre"
   },
   {
     "id": "sic-12",
@@ -230,12 +258,15 @@
       "service",
       "wifi"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "note": "WC disabili, lavatrice",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sicilia/agrimaccari/13561",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 347 5338111",
+    "sito": "https://www.agrimaccari.it/it",
+    "sitoOk": true
   },
   {
     "id": "sic-13",
@@ -250,12 +281,15 @@
       "market",
       "service"
     ],
-    "prezzo": "~25€",
-    "verificato": "2026-10",
+    "prezzo": "€15–50/notte (offerte inverno)",
+    "verificato": "2026-10-22",
     "note": "Winter-friendly",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.campingluminoso.com",
     "stato": "da riconfermare",
-    "stagione": "annuale"
+    "stagione": "annuale",
+    "tel": "+39 0932 918401",
+    "sito": "https://www.campingluminoso.com",
+    "sitoOk": true
   },
   {
     "id": "sic-14",
@@ -270,13 +304,15 @@
       "piscina",
       "zingaro"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "tel": "0923972577",
     "note": "8ha, 4 stelle",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.elbahira.it",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale (servizi ridotti nov–mar)",
+    "sito": "https://www.elbahira.it",
+    "sitoOk": true
   },
   {
     "id": "sic-15",
@@ -291,13 +327,15 @@
       "piscina",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€10–20/equipaggio secondo stagione",
+    "verificato": "2026-10-22",
     "tel": "3884423100",
     "note": "13 piazzole saline",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "http://www.lisoladelsale.it/it/area-attrezzata",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale H24",
+    "sito": "http://www.lisoladelsale.it/it/area-attrezzata",
+    "sitoOk": true
   },
   {
     "id": "sic-16",
@@ -312,12 +350,13 @@
       "navetta",
       "navetta templi"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
-    "note": "Vicinissimo Scala",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "prezzo": "€25/notte tutto compreso",
+    "verificato": "2026-10-22",
+    "note": "Solo pagina Facebook Parkingland, nessun sito ufficiale",
+    "fonte": "https://www.campercontact.com/it/italia/sicilia/realmonte/50811/area-attrezzata-parking-scala-dei-turchi-lmichelangelo",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 333 6635936"
   },
   {
     "id": "sic-17",
@@ -331,12 +370,15 @@
       "bar",
       "piscina"
     ],
-    "prezzo": "~30€",
-    "verificato": "2026-10",
+    "prezzo": "camper €11–12 + persona €6–10/notte + luce",
+    "verificato": "2026-10-22",
     "note": "Vicino Templi",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://campingvalledeitempli.com/prezzi/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale",
+    "tel": "+39 0922 411115",
+    "sito": "https://campingvalledeitempli.com",
+    "sitoOk": true
   },
   {
     "id": "sic-18",
@@ -351,11 +393,13 @@
       "custom"
     ],
     "prezzo": "preventivo",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "tel": "3202208857",
     "note": "Manutenzione/custom",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://doctorcamper.it",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "lun–ven, sab su appuntamento",
+    "sito": "https://doctorcamper.it",
+    "sitoOk": true
   }
 ]

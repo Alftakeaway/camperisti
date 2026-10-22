@@ -14,12 +14,15 @@
       "luce",
       "scarico"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "note": "95 piazzole, 50m spiaggia, apr-ott",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/oasi-gallura/2269",
     "stato": "da riconfermare",
-    "stagione": "apr-ott"
+    "stagione": "25 aprile – 20 ottobre",
+    "tel": "+39 338 7319626",
+    "sito": "https://www.oasigallura.it/",
+    "sitoOk": true
   },
   {
     "id": "sar-02",
@@ -36,12 +39,15 @@
       "luce",
       "navetta"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€27–38/notte secondo mese (elettricità inclusa)",
+    "verificato": "2026-10-22",
     "note": "100 piazzole, 700m spiaggia mag-ott",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.paradisepark.it/",
     "stato": "da riconfermare",
-    "stagione": "mag-ott"
+    "stagione": "maggio – ottobre",
+    "tel": "+39 079 936033",
+    "sito": "https://www.paradisepark.it/",
+    "sitoOk": true
   },
   {
     "id": "sar-03",
@@ -57,11 +63,11 @@
       "wc"
     ],
     "prezzo": "10€/24h",
-    "verificato": "2026-10",
-    "note": "10 stalli, NO scarico",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "verificato": "2026-10-22",
+    "note": "Ticket al bar/ristorante fronte porto; telefono solo in loco",
+    "fonte": "https://park4night.com/en/place/86870",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "tutto l'anno"
   },
   {
     "id": "sar-04",
@@ -75,10 +81,10 @@
       "acqua",
       "scarico"
     ],
-    "prezzo": "a pagamento",
-    "verificato": "2026-10",
+    "prezzo": "€5 a servizio (carico/scarico)",
+    "verificato": "2026-10-22",
     "note": "Solo service",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/camper-service-palau/28516",
     "stato": "da riconfermare",
     "stagione": null
   },
@@ -96,12 +102,13 @@
       "parcheggio",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€15/notte + €12 elettricità",
+    "verificato": "2026-10-22",
     "note": "300m mare",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://park4night.com/en/place/81808",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "stagionale (chiusura ~fine settembre)",
+    "tel": "+39 335 5640546"
   },
   {
     "id": "sar-06",
@@ -117,12 +124,15 @@
       "market",
       "piscina"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "preventivo via mail/WhatsApp",
+    "verificato": "2026-10-22",
     "note": "58 piazzole 54-72mq, 200m spiaggia",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.norcamp.de/it/italia/sosta-camping-torre-di-bari-sardo.17721.1.html",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "1 gennaio – 31 dicembre",
+    "tel": "+39 328 5555848",
+    "sito": "https://www.campingtorredibarisardo.com/",
+    "sitoOk": true
   },
   {
     "id": "sar-07",
@@ -138,12 +148,15 @@
       "ristorante",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "€20–58/notte secondo stagione",
+    "verificato": "2026-10-22",
     "note": "Apr-ott",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.norcamp.de/it/italia/camping-isola-dei-gabbiani.17501.1.html",
     "stato": "da riconfermare",
-    "stagione": "Apr-ott"
+    "stagione": "1 aprile – 25 ottobre",
+    "tel": "+39 0789 704019",
+    "sito": "https://www.isoladeigabbiani.it/",
+    "sitoOk": true
   },
   {
     "id": "sar-08",
@@ -159,12 +172,15 @@
       "market",
       "navetta"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "piazzola €9–20 + adulto €10–14/notte",
+    "verificato": "2026-10-22",
     "note": "1km Porto Taverna, AMP Tavolara",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camping-tavolara.it/it/listino.php",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "22 aprile – 14 ottobre",
+    "tel": "+39 0789 40166",
+    "sito": "https://www.camping-tavolara.it",
+    "sitoOk": true
   },
   {
     "id": "sar-09",
@@ -181,12 +197,15 @@
       "ristorante",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
-    "note": "175 piazzole",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
+    "note": "WhatsApp +39 348 1748503 per disponibilità",
+    "fonte": "https://www.sardegnaturismo.it/it/organizza/dormire/tonnara",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 0781 809058",
+    "sito": "https://www.camping-tonnara.it",
+    "sitoOk": false
   },
   {
     "id": "sar-10",
@@ -202,12 +221,15 @@
       "service",
       "wifi"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "preventivo online",
+    "verificato": "2026-10-22",
     "note": "Base Sinis",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.spinnakervacanze.com/en/opening-hours/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "primavera–autunno",
+    "tel": "+39 0783 22074",
+    "sito": "https://www.spinnakervacanze.com/",
+    "sitoOk": true
   },
   {
     "id": "sar-11",
@@ -223,12 +245,13 @@
       "luce",
       "navetta"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "da €19/notte",
+    "verificato": "2026-10-22",
     "note": "86 piazzole, 3km Porto Pino",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.campercontact.com/it/italia/sardegna/santanna-arresi/21115/agricamping-il-ruscello",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "fino al 1 novembre",
+    "tel": "+39 340 7788952"
   },
   {
     "id": "sar-12",
@@ -243,12 +266,15 @@
       "luce",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "note": "1km Cala Sinzias",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/campeggi/italia/sardegna/agricampeggio-gli-ulivi/23532",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "maggio – settembre",
+    "tel": "+39 349 0733872",
+    "sito": "https://www.agricampeggiogliulivi.it/",
+    "sitoOk": true
   },
   {
     "id": "sar-13",
@@ -264,12 +290,15 @@
       "ristorante",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "note": "20 mezzi, base Gorropu/Supramonte",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.paulesa.com/contatti",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "tutto l'anno",
+    "tel": "+39 333 8592973",
+    "sito": "https://www.paulesa.com",
+    "sitoOk": true
   },
   {
     "id": "sar-14",
@@ -285,12 +314,13 @@
       "luce",
       "service"
     ],
-    "prezzo": "n.d.",
-    "verificato": "2026-10",
+    "prezzo": "contattare la struttura",
+    "verificato": "2026-10-22",
     "note": "Fronte mare Sinis, giu-set",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/agricampeggio-muras-da-giuliano/23334",
     "stato": "da riconfermare",
-    "stagione": "giu-set"
+    "stagione": "giugno – settembre",
+    "tel": "+39 328 9366505"
   },
   {
     "id": "sar-15",
@@ -305,12 +335,14 @@
       "vendita"
     ],
     "prezzo": "preventivo",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "tel": "070828283",
     "note": "Area Cagliari",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.gambinocamper.it/mezzo-nuovo/",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "lun–ven 8:30–13/16–19, sab 9–12:30",
+    "sito": "https://www.gambinocamper.it",
+    "sitoOk": true
   },
   {
     "id": "sar-16",
@@ -325,10 +357,10 @@
       "noleggio"
     ],
     "prezzo": "preventivo",
-    "verificato": "2026-10",
+    "verificato": "2026-10-22",
     "tel": "070215878",
     "note": "Base aeroporto Cagliari",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "fonte": "https://www.scovaziende.com/noleggio-camper/35-autocaravan-rent-srl.html",
     "stato": "da riconfermare",
     "stagione": null
   }

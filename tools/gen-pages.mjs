@@ -44,7 +44,8 @@ for (const r of REGIONS) {
 <p><span class="badge">${esc(it.tipo)}</span> <span class="badge warn">${esc(it.stato || 'da riconfermare')}</span></p>
 <p>${esc(it.comune)} · ${esc(it.indirizzo || '')}</p>
 <p><b>Servizi:</b> ${esc((it.servizi || []).join(', ') || '—')}</p>
-<p><b>Prezzo:</b> ${esc(it.prezzo || 'n.d.')} · <b>Stagione:</b> ${esc(it.stagione || 'n.d.')} · <b>Controllo:</b> ${esc(it.verificato || '—')}</p>
+<p><b>Prezzo:</b> ${esc(it.prezzo || 'contattare la struttura')} · <b>Stagione:</b> ${esc(it.stagione || 'da confermare')} · <b>Controllo:</b> ${esc(it.verificato || '—')}</p>
+${it.sito ? `<p>Sito ufficiale: <a href="${esc(it.sito)}">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></p>` : ''}
 <p class="muted">Fonte: ${esc(it.fonte || '')}</p>
 <p>${esc(it.note || '')}</p>
 ${it.tel ? `<p>Tel: <a href="tel:${esc(it.tel)}">${esc(it.tel)}</a></p>` : ''}

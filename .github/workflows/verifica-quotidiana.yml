@@ -1,0 +1,25 @@
+name: verifica-quotidiana
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/update-check.mjs
+      - run: node tools/gen-pages.mjs
+      - run: |
+          git config user.name "camperisti-bot"
+          git config user.email "camperisti-bot@users.noreply.github.com"
+          git add frontend/data tools/last-check.json frontend/r frontend/s frontend/sitemap.xml
+          git diff --quiet --cached || git commit -m "Verifica quotidiana siti $(date +%F)"
+          git push

@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-22",
+  "ok": 48,
+  "ko": 2,
+  "bad": [
+    "sar-09 Sant'Antioco Cala Sapone https://www.camping-tonnara.it (http 0)",
+    "sic-07 Castiglione di Sicilia https://www.etnawineagriturismo.it/en/agricamper.html (http 0)"
+  ]
+}

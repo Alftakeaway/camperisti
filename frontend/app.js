@@ -220,9 +220,10 @@ function openDetail(id) {
     <h2 id="sheetTitle">${esc(it.nome)}</h2>
     <p class="muted">${esc(it.comune)} · ${esc(it.indirizzo || '')} · ${esc(it.regione)} ${statoBadge(it)}</p>
     <div class="chips">${(it.servizi || []).map(s => `<span>${esc(s)}</span>`).join('')}</div>
-    <p>Prezzo: <b class="price">${esc(it.prezzo || 'n.d.')}</b></p>
-    <p class="small muted">Stagione: ${esc(it.stagione || 'n.d.')} · Ultimo controllo: ${esc(it.verificato || '—')}</p>
-    <p class="small muted">Fonte: ${esc(it.fonte || '—')}</p>
+    <p>Prezzo: <b class="price">${esc(it.prezzo || 'contattare la struttura')}</b></p>
+    <p class="small muted">Stagione: ${esc(it.stagione || 'da confermare')} · Ultimo controllo: ${esc(it.verificato || '—')} (automatico ogni 24h)</p>
+    <p class="small muted">Fonte: ${/^https?:\/\//.test(it.fonte || '') ? `<a href="${esc(it.fonte)}" target="_blank" rel="noopener">link scheda fonte</a>` : esc(it.fonte || '—')}</p>
+    ${it.sito ? `<p class="small">Sito ufficiale: <a href="${esc(it.sito)}" target="_blank" rel="noopener">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a> <button class="btn ghost" data-d="recheck">⇄ ricontrolla ora</button> <span id="liveCheck" class="muted"></span></p>` : ''}
     <p>${esc(it.note || '')}</p>
     ${it.tel ? `<p>Tel: <a href="tel:${esc(it.tel)}">${esc(it.tel)}</a></p>` : '<p class="small muted">Telefono non in scheda — riconferma prima di partire.</p>'}
     <label for="notaFav">La mia nota</label>
@@ -248,6 +249,24 @@ $('#sheet').addEventListener('click', async e => {
     toast('Nota salvata · ' + (await persist()));
     openDetail(id);
     render(); renderDash();
+  }
+  if (b.dataset.d === 'recheck') {
+    const it = findItem(id);
+    const out = $('#liveCheck');
+    if (out) out.textContent = 'controllo in corso…';
+    try {
+      const c = new AbortController();
+      const t = setTimeout(() => c.abort(), 12000);
+      await fetch(it.sito, { mode: 'no-cors', cache: 'no-store', signal: c.signal });
+      clearTimeout(t);
+      const now = new Date().toLocaleString('it-IT');
+      try { localStorage.setItem('camperisti_check_' + id, now); } catch (e) {}
+      if (out) out.textContent = `sito raggiungibile ora (${now})`;
+      toast('Sito raggiungibile ✓');
+    } catch (e) {
+      if (out) out.textContent = 'sito non risponde ora — riprova più tardi';
+      toast('Sito non risponde');
+    }
   }
 });
 function closeModal() {
