@@ -55,6 +55,12 @@ main{max-width:1080px;margin:0 auto;padding:20px}
 .stack{display:flex;flex-direction:column;gap:8px}
 .favrow{display:flex;align-items:center;gap:8px;background:#0f1a16;border:1px solid var(--line);padding:8px 10px;border-radius:10px}
 .favrow button{margin-left:auto}
+/* checklist: layout deterministico + icone */
+.check{display:flex;align-items:center;gap:10px;background:#0f1a16;border:1px solid var(--line);padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left}
+.check input{width:20px;height:20px;accent-color:var(--acc2);flex:0 0 auto;margin:0;cursor:pointer}
+.check .cico{font-size:18px;flex:0 0 auto;line-height:1}
+.check .ctxt{text-align:left;flex:1}
+.check.done .ctxt{text-decoration:line-through;color:var(--mut)}
 input,textarea,select{font:inherit}
 .card input,.card textarea,.sheet input,.sheet textarea{width:100%;background:#0f1a16;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;margin:6px 0}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}

@@ -622,14 +622,16 @@ function paintAuth() {
 
 // ---- extra: checklist + costi ----
 const CHECKS = ['Acqua potabile piena', 'Scarico grigie/nere vuoto', 'Gas / bombole', 'Elettricità / cavo', 'Documenti + assicurazione', 'Farmaci + cane', 'Cibo base + torce', 'Gomme / ruotino / triangolo', 'Prenota area prima sera', 'Mappe offline / contanti'];
+const CHECK_ICONS = ['💧', '🚽', '🔥', '🔌', '📄', '🐕', '🧺', '🛞', '📞', '🗺️'];
 let checks = jparse(localStorage.getItem('camperisti_checks'), []);
 if (!Array.isArray(checks)) checks = [];
 function renderChecks() {
-  $('#checklist').innerHTML = CHECKS.map((c, i) => `<label class="favrow"><input type="checkbox" data-i="${i}" ${checks.includes(i) ? 'checked' : ''}> ${esc(c)}</label>`).join('');
+  $('#checklist').innerHTML = CHECKS.map((c, i) => `<label class="check${checks.includes(i) ? ' done' : ''}"><input type="checkbox" data-i="${i}" ${checks.includes(i) ? 'checked' : ''} aria-label="${esc(c)}"><span class="cico" aria-hidden="true">${CHECK_ICONS[i]}</span><span class="ctxt">${esc(c)}</span></label>`).join('');
   document.querySelectorAll('#checklist input').forEach(cb => cb.onchange = () => {
     const i = +cb.dataset.i;
     checks = cb.checked ? [...new Set([...checks, i])] : checks.filter(x => x !== i);
-    localStorage.setItem('camperisti_checks', JSON.stringify(checks));
+    try { localStorage.setItem('camperisti_checks', JSON.stringify(checks)); } catch (e) {}
+    cb.closest('.check').classList.toggle('done', cb.checked);
   });
 }
 $('#resetCheck').onclick = () => { checks = []; localStorage.removeItem('camperisti_checks'); renderChecks(); };
