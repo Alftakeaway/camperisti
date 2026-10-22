@@ -48,7 +48,7 @@ for (const r of REGIONS) {
 <p><span class="badge">${esc(it.tipo)}</span> <span class="badge warn">${esc(it.stato || 'da riconfermare')}</span></p>
 <p>${esc(it.comune)} · ${esc(it.indirizzo || '')}</p>
 <p><b>Servizi:</b> ${esc((it.servizi || []).join(', ') || '—')}</p>
-<p><b>${it.tipo === 'officina' || it.tipo === 'service' ? 'Servizio' : 'Prezzo'}:</b> ${esc(it.tipo === 'officina' || it.tipo === 'service' ? 'Preventivi su richiesta' : (it.prezzo || 'contattare la struttura'))} · <b>Stagione:</b> ${esc(it.stagione || 'da confermare')} · <b>Controllo:</b> ${esc(it.verificato || '—')}</p>
+<p><b>${it.tipo === 'officina' || it.tipo === 'service' ? 'Servizio' : 'Prezzo'}:</b> ${esc((() => { const p = it.prezzo || ''; const nop = /preventivo|contattare|n\.d\./i.test(p) || !p; if (nop) return (it.tipo === 'officina' || it.tipo === 'service') ? 'Preventivi su richiesta' : 'Da confermare al telefono'; return p; })())} · <b>Stagione:</b> ${esc(it.stagione || 'da confermare')} · <b>Controllo:</b> ${esc(it.verificato || '—')}</p>
 ${it.sito ? `<p>Sito ufficiale: <a href="${esc(it.sito)}">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></p>` : ''}
 <p class="muted">Fonte: ${esc(it.fonte || '')}</p>
 <p>${esc(it.note || '')}</p>

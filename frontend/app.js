@@ -189,10 +189,12 @@ function scopedItems() {
 }
 
 function priceLine(it) {
-  if (it.tipo === 'officina' || it.tipo === 'service') {
-    return `<span class="muted">Preventivi su richiesta</span>`;
+  const p = it.prezzo || '';
+  // officine/service senza listino: niente stile prezzo; se il prezzo c'è, mostrarlo sempre
+  if (/preventivo|contattare|n\.d\./i.test(p) || !p) {
+    return `<span class="muted">${it.tipo === 'officina' || it.tipo === 'service' ? 'Preventivi su richiesta' : 'Da confermare al telefono'}</span>`;
   }
-  return `<span class="price">${esc(it.prezzo || 'contattare la struttura')}</span>`;
+  return `<span class="price">${esc(p)}</span>`;
 }
 function statoBadge(it) {
   return it.stato === 'verificato'
