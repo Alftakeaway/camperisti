@@ -208,8 +208,6 @@ function checkUrlOf(it) {
   if (/^https?:\/\//.test(it.fonte || '')) return { url: it.fonte, label: 'Scheda fonte' };
   return null;
 }
-  return trips.some(t => !t.d && Array.isArray(t.stops) && t.stops.includes(id));
-}
 function ratingLine(it) {
   const a = revAvg(it.id);
   if (a == null) return '';
