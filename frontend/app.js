@@ -203,6 +203,13 @@ function statoBadge(it) {
 function tripHas(id) {
   return trips.some(t => !t.d && Array.isArray(t.stops) && t.stops.includes(id));
 }
+function checkUrlOf(it) {
+  if (it.sito) return { url: it.sito, label: 'Sito ufficiale' };
+  if (/^https?:\/\//.test(it.fonte || '')) return { url: it.fonte, label: 'Scheda fonte' };
+  return null;
+}
+  return trips.some(t => !t.d && Array.isArray(t.stops) && t.stops.includes(id));
+}
 function ratingLine(it) {
   const a = revAvg(it.id);
   if (a == null) return '';
@@ -258,7 +265,7 @@ function openDetail(id) {
     <p>${(it.tipo === 'officina' || it.tipo === 'service') ? 'Servizio' : 'Prezzo'}: ${priceLine(it)}</p>
     <p class="small muted">Stagione: ${esc(it.stagione || 'da confermare')} · Ultimo controllo: ${esc(it.verificato || '—')} (automatico ogni 24h)</p>
     <p class="small muted">Fonte: ${/^https?:\/\//.test(it.fonte || '') ? `<a href="${esc(it.fonte)}" target="_blank" rel="noopener">link scheda fonte</a>` : esc(it.fonte || '—')}</p>
-    ${it.sito ? `<p class="small">Sito ufficiale: <a href="${esc(it.sito)}" target="_blank" rel="noopener">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a> <button class="btn ghost" data-d="recheck">⇄ ricontrolla ora</button> <span id="liveCheck" class="muted"></span></p>` : ''}
+    ${(() => { const c = checkUrlOf(it); return c ? `<p class="small">${c.label}: <a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.url.replace(/^https?:\/\//, '').replace(/\/$/, '').slice(0, 42))}</a> <button class="btn ghost" data-d="recheck">⇄ ricontrolla ora</button> <span id="liveCheck" class="muted"></span></p>` : ''; })()}
     <p>${esc(it.note || '')}</p>
     ${it.tel ? `<p>Tel: <a href="tel:${esc(it.tel)}">${esc(it.tel)}</a></p>` : '<p class="small muted">Telefono non in scheda — riconferma prima di partire.</p>'}
     ${tripHas(it.id) ? '<p><span class="pill">nel tuo viaggio ✓</span></p>' : ''}
@@ -337,12 +344,14 @@ $('#sheet').addEventListener('click', async e => {
   }
   if (b.dataset.d === 'recheck') {
     const it = findItem(id);
+    const chk = it && checkUrlOf(it);
     const out = $('#liveCheck');
+    if (!chk) { if (out) out.textContent = 'nessun link da controllare per questa scheda'; return; }
     if (out) out.textContent = 'controllo in corso…';
     try {
       const c = new AbortController();
       const t = setTimeout(() => c.abort(), 12000);
-      await fetch(it.sito, { mode: 'no-cors', cache: 'no-store', signal: c.signal });
+      await fetch(chk.url, { mode: 'no-cors', cache: 'no-store', signal: c.signal });
       clearTimeout(t);
       const now = new Date().toLocaleString('it-IT');
       try { localStorage.setItem('camperisti_check_' + id, now); } catch (e) {}
