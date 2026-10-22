@@ -6,9 +6,52 @@ let DB = {}, ITINS = [];
 let curReg = 'campania';
 let qf = new Set();
 let HAS_API = false;
-let user = JSON.parse(localStorage.getItem('camperisti_user') || 'null');
-let favs = JSON.parse(localStorage.getItem('camperisti_favs') || '{}');
-let trips = JSON.parse(localStorage.getItem('camperisti_trips') || []);
+// ---- stato locale con parse sicura: archivio vuoto o corrotto non blocca mai l'avvio ----
+const jparse = (s, fb) => { try { const v = JSON.parse(s); return v === undefined ? fb : v; } catch (e) { return fb; } };
+let user = jparse(localStorage.getItem('camperisti_user'), null);
+if (user && typeof user !== 'object') user = null;
+let favs = {};
+let trips = [];
+// archivi separati per identità: ospite / profilo dispositivo / email
+const nsKey = base => base + '::' + (user ? (user.email || (user.device ? 'profilo:' + user.nome : 'ospite')) : 'anonimo');
+function saveLocal() {
+  try {
+    localStorage.setItem(nsKey('camperisti_favs'), JSON.stringify(favs));
+    localStorage.setItem(nsKey('camperisti_trips'), JSON.stringify(trips));
+  } catch (e) { /* spazio esaurito: i dati restano in memoria per la sessione */ }
+}
+function loadLocal() {
+  const fk = localStorage.getItem(nsKey('camperisti_favs'));
+  const tk = localStorage.getItem(nsKey('camperisti_trips'));
+  if (fk === null && tk === null && !localStorage.getItem('camperisti_migrated')) {
+    // migrazione una tantum dalle chiavi globali precedenti verso la prima identità usata
+    const lf = jparse(localStorage.getItem('camperisti_favs'), null);
+    const lt = jparse(localStorage.getItem('camperisti_trips'), null);
+    favs = (lf && typeof lf === 'object' && !Array.isArray(lf)) ? lf : {};
+    trips = Array.isArray(lt) ? lt : [];
+    try {
+      localStorage.setItem('camperisti_migrated', '1');
+      localStorage.removeItem('camperisti_favs');
+      localStorage.removeItem('camperisti_trips');
+    } catch (e) {}
+  } else {
+    const f = jparse(fk, null);
+    const t = jparse(tk, null);
+    favs = (f && typeof f === 'object' && !Array.isArray(f)) ? f : {};
+    trips = Array.isArray(t) ? t : [];
+  }
+  saveLocal();
+}
+// pulizia una tantum vecchie password demo leggibili: non più usate, via
+try {
+  const dead = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.indexOf('camperisti_pw_') === 0) dead.push(k);
+  }
+  dead.forEach(k => localStorage.removeItem(k));
+} catch (e) {}
+loadLocal();
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -118,7 +161,7 @@ let lastFocus = null;
 function openDetail(id) {
   const it = findItem(id);
   if (!it) return;
-  lastFocus = document.activeElement;
+  if ($('#modal').classList.contains('hidden')) lastFocus = document.activeElement;
   const saved = hasFav(it.id);
   $('#sheet').innerHTML = `
     <h2 id="sheetTitle">${esc(it.nome)}</h2>
@@ -142,7 +185,7 @@ function openDetail(id) {
   $('#sheet').querySelector('button, textarea, a').focus();
   if (location.hash !== '#/s/' + id) history.replaceState(null, '', '#/s/' + id);
 }
-$('#sheet').addEventListener('click', e => {
+$('#sheet').addEventListener('click', async e => {
   const b = e.target.closest('[data-d]');
   if (!b) return;
   const id = $('#sheet').dataset.id;
@@ -150,8 +193,7 @@ $('#sheet').addEventListener('click', e => {
   if (b.dataset.d === 'save') {
     favs[id] = $('#notaFav').value || '';
     // normalizza: chiave presente = salvato (anche con nota vuota)
-    persist();
-    toast(whereSaved());
+    toast('Nota salvata · ' + (await persist()));
     openDetail(id);
     render(); renderDash();
   }
@@ -163,31 +205,63 @@ function closeModal() {
 }
 window.closeModal = closeModal;
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+function openDialog() {
+  if (!$('#modal').classList.contains('hidden')) return $('#sheet');
+  if (!$('#authModal').classList.contains('hidden')) return $('#authModal .sheet');
+  return null;
+}
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
+  const dlg = openDialog();
+  if (e.key === 'Escape' && dlg) {
     if (!$('#modal').classList.contains('hidden')) closeModal();
-    else if (!$('#authModal').classList.contains('hidden')) $('#authModal').classList.add('hidden');
+    else $('#authModal').classList.add('hidden');
+    $('#authBtn').focus();
+    return;
+  }
+  // focus trap: la tastiera resta dentro il dialogo aperto
+  if (e.key === 'Tab' && dlg) {
+    const f = [...dlg.querySelectorAll('button, input, select, textarea, a[href]')]
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+    else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
   }
 });
 
 // ---- preferiti (coerenti: chiave presente = salvato) ----
-function toggleFav(id) {
-  if (hasFav(id)) delete favs[id]; else favs[id] = '';
-  persist(); render(); renderDash();
-  toast(hasFav(id) ? 'Salvato ♥ · ' + whereSaved() : 'Rimosso dai salvati');
+async function toggleFav(id) {
+  const adding = !hasFav(id);
+  if (!adding) delete favs[id]; else favs[id] = '';
+  render(); renderDash();
+  toast((adding ? 'Salvato ♥ · ' : 'Rimosso · ') + (await persist()));
 }
-function whereSaved() {
-  if (user && user.token && HAS_API) return 'sincronizzato';
-  if (user) return 'solo su questo dispositivo';
-  return 'solo su questo dispositivo (accedi per sincronizzare)';
-}
-function persist() {
-  localStorage.setItem('camperisti_favs', JSON.stringify(favs));
-  localStorage.setItem('camperisti_trips', JSON.stringify(trips));
+let lastSync = 'solo su questo dispositivo';
+// "sincronizzato" solo dopo conferma del server (r.ok su entrambi i POST)
+async function persist() {
+  saveLocal();
   if (user && user.token && HAS_API) {
-    fetch('/api/favorites', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authH() }, body: JSON.stringify({ favs }) }).catch(() => {});
-    fetch('/api/trips', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authH() }, body: JSON.stringify({ trips }) }).catch(() => {});
+    try {
+      const opt = b => ({ method: 'POST', headers: { 'Content-Type': 'application/json', ...authH() }, body: b, signal: AbortSignal.timeout(2500) });
+      const r1 = await fetch('/api/favorites', opt(JSON.stringify({ favs })));
+      const r2 = await fetch('/api/trips', opt(JSON.stringify({ trips })));
+      if (r1.status === 401 || r2.status === 401) {
+        user.token = null;
+        try { localStorage.setItem('camperisti_user', JSON.stringify(user)); } catch (e) {}
+        lastSync = 'sessione scaduta — rieffettua il login';
+      } else if (r1.ok && r2.ok) {
+        lastSync = 'sincronizzato ✓';
+      } else {
+        lastSync = 'server: errore ' + (!r1.ok ? r1.status : r2.status);
+      }
+    } catch (e) {
+      lastSync = 'server non raggiungibile — salvato solo locale';
+    }
+  } else {
+    lastSync = user ? 'solo su questo dispositivo' : 'solo su questo dispositivo (accedi per sincronizzare)';
   }
+  if (document.querySelector('#view-dashboard:not(.hidden)')) renderDash();
+  return lastSync;
 }
 async function syncFromBackend() {
   if (!user || !user.token || !HAS_API) return;
@@ -196,13 +270,29 @@ async function syncFromBackend() {
     if (rf.ok && rf.data && rf.data.favs && Object.keys(rf.data.favs).length) favs = rf.data.favs;
     const rt = await api('/api/trips', { headers: authH() });
     if (rt.ok && rt.data && rt.data.trips && rt.data.trips.length) trips = rt.data.trips;
-    localStorage.setItem('camperisti_favs', JSON.stringify(favs));
-    localStorage.setItem('camperisti_trips', JSON.stringify(trips));
-    renderDash();
+    saveLocal();
+    lastSync = 'sincronizzato ✓';
+    render(); renderDash();
   } catch (e) {}
 }
 
-// ---- itinerari: tappe ordinate, importabili ----
+// collega le tappe testuali dell'itinerario alle strutture del catalogo (stessa regione)
+function matchStops(t) {
+  const items = DB[t.regione] || [];
+  const found = [], missing = [];
+  for (const tp of t.tappe) {
+    const words = String(tp).toLowerCase().split(/[^a-zà-ÿ0-9]+/).filter(w => w.length > 3);
+    let best = null, bestHits = 0;
+    for (const it of items) {
+      const hay = (it.nome + ' ' + it.comune).toLowerCase();
+      const hits = words.filter(w => hay.includes(w)).length;
+      if (hits > bestHits) { bestHits = hits; best = it; }
+    }
+    if (best && !found.includes(best.id)) found.push(best.id);
+    else missing.push(tp);
+  }
+  return { found, missing };
+}
 function renderItins() {
   $('#itinGrid').innerHTML = ITINS.map(t => `<article class="card">
     <span class="badge">${esc(t.regione)}</span>
@@ -212,14 +302,20 @@ function renderItins() {
     <div class="row"><button class="btn ghost" data-itin="${esc(t.id)}">Usa come viaggio</button></div>
   </article>`).join('');
 }
-$('#itinGrid').addEventListener('click', e => {
+$('#itinGrid').addEventListener('click', async e => {
   const b = e.target.closest('[data-itin]');
   if (!b) return;
   if (!user) return openAuth();
   const t = ITINS.find(x => x.id === b.dataset.itin);
-  trips.push({ name: t.titolo, notes: (t.note || '') + ' — ' + t.km, stops: [], created: new Date().toISOString() });
-  persist(); renderDash(); nav('dashboard');
-  toast('Viaggio creato — aggiungi le tappe dai salvati');
+  const { found, missing } = matchStops(t);
+  trips.push({
+    name: t.titolo,
+    notes: (t.note || '') + ' — ' + t.km + (missing.length ? '\nDa completare (non in catalogo): ' + missing.join(' · ') : ''),
+    stops: found, created: new Date().toISOString()
+  });
+  const where = await persist();
+  renderDash(); nav('dashboard');
+  toast(`Viaggio creato: ${found.length} tappe collegate${missing.length ? ', ' + missing.length + ' da completare' : ''} · ${where}`);
 });
 
 // ---- dashboard: viaggi con tappe ordinabili + export ----
@@ -229,7 +325,7 @@ function renderDash() {
   $('#dashBody').classList.toggle('hidden', !logged);
   if (!logged) return;
   const items = allItems().filter(x => hasFav(x.id));
-  const syncLabel = user.token && HAS_API ? 'sincronizzato' : (user.guest ? 'ospite · solo dispositivo' : 'solo su questo dispositivo');
+  const syncLabel = lastSync;
   $('#favCount').textContent = `(${items.length}) · ${syncLabel}`;
   $('#favList').innerHTML = items.map(i => `<div class="favrow"><b>${esc(i.nome)}</b><span class="muted small">${esc(i.comune)}</span><button class="btn ghost" data-unfav="${esc(i.id)}" aria-label="Rimuovi ${esc(i.nome)}">✕</button></div>`).join('')
     || '<p class="muted">Nessun salvato. Tocca ♡ sulle schede.</p>';
@@ -279,12 +375,12 @@ $('#tripList').addEventListener('change', e => {
     persist(); renderDash();
   }
 });
-$('#saveTrip').onclick = () => {
+$('#saveTrip').onclick = async () => {
   if (!user) return openAuth();
   const n = $('#tripName').value.trim() || 'Viaggio senza nome';
   trips.push({ name: n, notes: $('#tripNotes').value || '', stops: Object.keys(favs), created: new Date().toISOString() });
   $('#tripName').value = ''; $('#tripNotes').value = '';
-  persist(); renderDash(); toast('Viaggio salvato · ' + whereSaved());
+  renderDash(); toast('Viaggio salvato · ' + (await persist()));
 };
 const gpxEsc = s => String(s ?? '').replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
 function exportTripGpx(ix) {
@@ -372,17 +468,33 @@ function openAuth() { $('#authModal').classList.remove('hidden'); $('#aEmail').f
 window.openAuth = openAuth;
 $('#authBtn').onclick = openAuth;
 $('#closeAuth').onclick = () => $('#authModal').classList.add('hidden');
-$('#guestBtn').onclick = () => {
+$('#guestBtn').onclick = async () => {
+  await persist(); // conserva l'identità precedente prima di cambiare
   user = { guest: true, nome: 'Ospite' };
-  localStorage.setItem('camperisti_user', JSON.stringify(user));
+  try { localStorage.setItem('camperisti_user', JSON.stringify(user)); } catch (e) {}
+  loadLocal();
   $('#authModal').classList.add('hidden');
   paintAuth(); renderDash(); nav('dashboard');
-  toast('Modalità ospite · solo su questo dispositivo');
+  toast('Modalità ospite · archivio separato su questo dispositivo');
+  $('#authBtn').focus();
 };
-$('#logoutBtn').onclick = () => {
-  user = null;
-  localStorage.removeItem('camperisti_user');
+$('#deviceBtn').onclick = async () => {
+  const nome = $('#aNome').value.trim() || 'Viaggiatore';
+  await persist();
+  user = { device: true, nome };
+  try { localStorage.setItem('camperisti_user', JSON.stringify(user)); } catch (e) {}
+  loadLocal();
+  $('#authModal').classList.add('hidden');
+  paintAuth(); renderDash(); nav('dashboard');
+  toast('Profilo dispositivo · senza password, archivio separato');
+  $('#authBtn').focus();
+};
+$('#logoutBtn').onclick = async () => {
+  await persist();
+  user = null; favs = {}; trips = [];
+  try { localStorage.removeItem('camperisti_user'); } catch (e) {}
   paintAuth(); renderDash();
+  toast('Uscito · ogni identità conserva il proprio archivio');
 };
 async function authCall(mode) {
   const email = $('#aEmail').value.trim().toLowerCase();
@@ -390,39 +502,27 @@ async function authCall(mode) {
   const nome = $('#aNome').value.trim();
   $('#authMsg').textContent = '';
   if (!email || !pass) { $('#authMsg').textContent = 'Inserisci email e password.'; return; }
-  // 1) prova backend (stessa origine) con timeout
+  // solo backend: niente più password salvate sul dispositivo
   const r = await api('/api/auth/' + mode, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, pass, nome })
   });
   if (r.ok && r.data && r.data.ok) {
+    await persist(); // conserva l'identità precedente prima di cambiare
     user = { email: r.data.email, nome: r.data.nome || nome || email, token: r.data.token };
-    localStorage.setItem('camperisti_user', JSON.stringify(user));
+    try { localStorage.setItem('camperisti_user', JSON.stringify(user)); } catch (e) {}
+    loadLocal();
     $('#authModal').classList.add('hidden');
     paintAuth(); renderDash(); syncFromBackend();
     toast('Ciao ' + (user.nome || '') + ' · sincronizzato ✓');
+    $('#authBtn').focus();
     return;
   }
-  if (r.err !== 'offline' && r.status !== 404) {
-    $('#authMsg').textContent = (r.data && r.data.error) || 'Accesso non riuscito.';
+  if (r.err === 'offline' || r.status === 404) {
+    $('#authMsg').textContent = 'Server non raggiungibile da qui: usa profilo dispositivo o ospite.';
     return;
   }
-  // 2) fallback dispositivo — SOLO demo locale, login e registrazione separati
-  const k = 'camperisti_pw_' + email;
-  const stored = localStorage.getItem(k);
-  if (mode === 'register') {
-    if (stored) { $('#authMsg').textContent = 'Account già presente su questo dispositivo: usa Accedi.'; return; }
-    localStorage.setItem(k, 'demo:' + pass);
-    user = { email, nome: nome || email };
-  } else {
-    if (!stored) { $('#authMsg').textContent = 'Nessun account su questo dispositivo: usa Registrati o entra come ospite.'; return; }
-    if (stored !== 'demo:' + pass) { $('#authMsg').textContent = 'Password non corretta.'; return; }
-    user = { email, nome: email };
-  }
-  localStorage.setItem('camperisti_user', JSON.stringify(user));
-  $('#authModal').classList.add('hidden');
-  paintAuth(); renderDash();
-  toast('Account dispositivo (demo) · solo su questo dispositivo');
+  $('#authMsg').textContent = (r.data && r.data.error) || 'Accesso non riuscito.';
 }
 $('#doLogin').onclick = () => authCall('login');
 $('#doReg').onclick = () => authCall('register');
@@ -435,7 +535,8 @@ function paintAuth() {
 
 // ---- extra: checklist + costi ----
 const CHECKS = ['Acqua potabile piena', 'Scarico grigie/nere vuoto', 'Gas / bombole', 'Elettricità / cavo', 'Documenti + assicurazione', 'Farmaci + cane', 'Cibo base + torce', 'Gomme / ruotino / triangolo', 'Prenota area prima sera', 'Mappe offline / contanti'];
-let checks = JSON.parse(localStorage.getItem('camperisti_checks') || '[]');
+let checks = jparse(localStorage.getItem('camperisti_checks'), []);
+if (!Array.isArray(checks)) checks = [];
 function renderChecks() {
   $('#checklist').innerHTML = CHECKS.map((c, i) => `<label class="favrow"><input type="checkbox" data-i="${i}" ${checks.includes(i) ? 'checked' : ''}> ${esc(c)}</label>`).join('');
   document.querySelectorAll('#checklist input').forEach(cb => cb.onchange = () => {

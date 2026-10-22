@@ -156,27 +156,31 @@
 <div id="modal" class="modal hidden"><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
 <div id="authModal" class="modal hidden">
   <div class="sheet small" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-    <h3 id="authTitle">Accedi / Registrati</h3>
-    <p class="muted">Gratis, senza carta. <b>Ospite</b>: nessuna password, solo questo dispositivo. <b>Dispositivo</b>: demo locale. <b>Backend</b>: sincronizzato, solo se il server è attivo.</p>
-    <label for="aNome">Nome (solo registrazione)</label>
-    <input id="aNome" placeholder="Nome (solo registrazione)" autocomplete="nickname">
-    <label for="aEmail">Email</label>
+    <h3 id="authTitle">Accedi / Profilo</h3>
+    <p class="muted">Gratis, senza carta. <b>Ospite</b> e <b>profilo dispositivo</b>: senza password, archivio separato su questo dispositivo. <b>Email + password</b>: solo con server attivo (sincronizzato).</p>
+    <label for="aNome">Nome profilo</label>
+    <input id="aNome" placeholder="Nome profilo" autocomplete="nickname">
+    <div class="row">
+      <button class="btn primary" id="deviceBtn">Profilo dispositivo</button>
+      <button class="btn ghost" id="guestBtn">Ospite</button>
+    </div>
+    <label for="aEmail">Email (solo server)</label>
     <input id="aEmail" placeholder="Email" type="email" autocomplete="email">
-    <label for="aPass">Password</label>
+    <label for="aPass">Password (solo server)</label>
     <input id="aPass" placeholder="Password" type="password" autocomplete="current-password">
     <div class="row">
-      <button class="btn primary" id="doLogin">Accedi</button>
+      <button class="btn ghost" id="doLogin">Accedi</button>
       <button class="btn ghost" id="doReg">Registrati</button>
-      <button class="btn ghost" id="guestBtn">Ospite</button>
       <button class="btn ghost" id="closeAuth">Chiudi</button>
     </div>
     <p id="authMsg" class="muted"></p>
   </div>
 </div>
-<div id="toast" class="toast hidden"></div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
 <footer>
   <p>Camperisti beta — catalogo in verifica: <b>riconferma sempre telefono e prezzi prima di partire</b>. *Free: consultazione e salvataggi locali sempre gratuiti.</p>
+  <p class="muted small">Regioni: <a href="r/campania.html">Campania</a> · <a href="r/lazio.html">Lazio</a> · <a href="r/sardegna.html">Sardegna</a> · <a href="r/sicilia.html">Sicilia</a></p>
 </footer>
 
 <script src="app.js"></script>

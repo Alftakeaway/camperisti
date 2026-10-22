@@ -1,8 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://camperisti-p0ly.vercel.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://camperisti-p0ly.vercel.app/#/r/campania</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://camperisti-p0ly.vercel.app/#/r/lazio</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://camperisti-p0ly.vercel.app/#/r/sardegna</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://camperisti-p0ly.vercel.app/#/r/sicilia</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-01.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-02.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-03.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-04.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-05.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-06.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-07.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-08.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-09.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-10.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-11.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-12.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-13.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-14.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-15.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-16.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/cam-17.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-01.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-02.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-03.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-04.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-05.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-06.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-07.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-08.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-09.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-10.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-11.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-12.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-13.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-14.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-15.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/laz-16.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-01.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-02.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-03.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-04.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-05.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-06.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-07.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-08.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-09.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-10.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-11.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-12.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-13.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-14.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-15.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sar-16.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-01.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-02.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-03.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-04.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-05.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-06.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-07.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-08.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-09.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-10.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-11.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-12.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-13.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-14.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-15.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-16.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-17.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/s/sic-18.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/r/campania.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/r/lazio.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/r/sardegna.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://camperisti-p0ly.vercel.app/r/sicilia.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

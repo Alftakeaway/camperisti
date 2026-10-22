@@ -27,8 +27,8 @@ const SYN = new Map([
 
 const norm = s => {
   const k = String(s).trim().toLowerCase();
-  if (/(mare|spiaggia)\b/.test(k) && !/maremma/.test(k)) return 'mare';
   if (SYN.has(k)) return SYN.get(k);
+  if (/(mare|spiaggia)\b/.test(k) && !/maremma/.test(k)) return 'mare';
   return k;
 };
 
@@ -42,8 +42,10 @@ for (const f of readdirSync('frontend/data')) {
   for (const it of arr) {
     if (seen.has(it.id)) throw new Error('ID duplicato: ' + it.id);
     seen.add(it.id);
-    const sv = [...new Set((it.servizi || []).map(norm))];
-    it.servizi = sv.filter(Boolean).sort();
+    const sv = [...new Set((it.servizi || []).map(norm))].filter(Boolean);
+    // ripristino mirato: "navetta mare/spiaggia" era collassata in "mare" dalla vecchia regola
+    if (!sv.includes('navetta') && /navetta/i.test(`${it.note || ''} ${(it.servizi || []).join(' ')}`)) sv.push('navetta');
+    it.servizi = sv.sort();
     it.fonte = it.fonte || 'Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare';
     it.stato = it.stato || 'da riconfermare';
     if (!('stagione' in it)) {

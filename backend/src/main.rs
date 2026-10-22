@@ -103,31 +103,125 @@ fn jval(body: &str, key: &str) -> String {
     v[..end].trim().trim_matches('"').to_string()
 }
 
-// users.json come oggetto: {"email": {"nome": "...", "hash": "..."}}
+// users.json come oggetto: {"users": {"email": {"nome": "...", "hash": "..."}}}
+// Se esiste ancora il vecchissimo formato array, viene migrato davvero (non svuotato).
 fn load_users() -> String {
     let fp = data_dir().join("users.json");
     let cur = fs::read_to_string(&fp).unwrap_or("{\"users\":{}}".into());
     if cur.trim_start().starts_with('[') {
-        // migra vecchio formato array -> oggetto (email+hash già appaiati)
-        return "{\"users\":{}}".to_string();
+        let mut obj = String::from("{\"users\":{");
+        let mut first = true;
+        // cerca "email":".." e, nella stessa finestra, "nome" e "hash"
+        let mut pos = 0;
+        while let Some(e) = find_key(&cur[pos..], "\"email\":\"") {
+            let a = pos + e;
+            let email = take_quoted(&cur[a..]);
+            let window = &cur[a..(a + 600).min(cur.len())];
+            let nome = find_key(window, "\"nome\":\"")
+                .map(|k| take_quoted(&window[k..]))
+                .unwrap_or_default();
+            let hash = find_key(window, "\"hash\":\"")
+                .map(|k| take_quoted(&window[k..]))
+                .unwrap_or_default();
+            if !email.is_empty() && !hash.is_empty() {
+                if !first {
+                    obj.push(',');
+                }
+                first = false;
+                obj.push_str(&format!(
+                    "\"{}\":{{\"nome\":\"{}\",\"hash\":\"{}\"}}",
+                    esc(&email),
+                    esc(&nome),
+                    hash
+                ));
+            }
+            pos = a + 8;
+            if pos >= cur.len() {
+                break;
+            }
+        }
+        obj.push_str("}}");
+        let _ = fs::write(&fp, &obj);
+        return obj;
     }
     cur
 }
 
+fn find_key(hay: &str, key: &str) -> Option<usize> {
+    hay.find(key).map(|i| i + key.len())
+}
+
+fn take_quoted(s: &str) -> String {
+    let mut out = String::new();
+    let mut it = s.chars();
+    while let Some(c) = it.next() {
+        if c == '\\' {
+            if let Some(n) = it.next() {
+                out.push(n);
+            }
+        } else if c == '"' {
+            break;
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
+// estrae il record {"nome":..,"hash":..} di un'email con conteggio delle graffe
+// (funziona anche per l'ultimo utente, senza virgola finale)
+fn extract_record(users: &str, email: &str) -> Option<String> {
+    let needle = format!("\"{}\":", esc(email));
+    let start = users.find(&needle)? + needle.len();
+    let bytes = users.as_bytes();
+    let mut pos = start;
+    while pos < bytes.len() && bytes[pos].is_ascii_whitespace() {
+        pos += 1;
+    }
+    if bytes.get(pos) != Some(&b'{') {
+        return None;
+    }
+    let mut depth = 0usize;
+    let mut in_str = false;
+    let mut escaped = false;
+    let mut end = pos;
+    for (k, &b) in bytes[pos..].iter().enumerate() {
+        if in_str {
+            if escaped {
+                escaped = false;
+            } else if b == b'\\' {
+                escaped = true;
+            } else if b == b'"' {
+                in_str = false;
+            }
+        } else if b == b'"' {
+            in_str = true;
+        } else if b == b'{' {
+            depth += 1;
+        } else if b == b'}' {
+            depth -= 1;
+            if depth == 0 {
+                end = pos + k + 1;
+                break;
+            }
+        }
+    }
+    if depth != 0 {
+        return None;
+    }
+    Some(users[start..end].to_string())
+}
+
 // verifica email+hash APPAIATI nello stesso record (mai separati)
 fn check_user(users: &str, email: &str, hash: &str) -> Option<String> {
-    let needle = format!("\"{}\":", esc(email));
-    let i = users.find(&needle)?;
-    let rec = &users[i + needle.len()..];
-    let end = rec.find("\n},").or_else(|| rec.find("},"))?;
-    let rec = &rec[..end];
+    let rec = extract_record(users, email)?;
     if !rec.contains(&format!("\"hash\":\"{}\"", hash)) {
         return None;
     }
     let nome = rec
         .split("\"nome\":\"")
         .nth(1)
-        .map(|s| s.split('"').next().unwrap_or("").to_string())
+        .map(take_quoted)
         .unwrap_or_default();
     Some(nome)
 }
@@ -165,23 +259,48 @@ fn new_token(email: &str) -> String {
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_nanos())
         .unwrap_or(0);
+    // demo-grade: nessun CSPRNG in std. Non esporre su Internet senza argon2/TLS.
     let mut h = DefaultHasher::new();
-    (nanos, CTR.fetch_add(1, Ordering::SeqCst), email).hash(&mut h);
-    format!("{:016x}{:016x}", h.finish(), nanos & 0xffffffffffffffff)
+    (
+        nanos,
+        CTR.fetch_add(1, Ordering::SeqCst),
+        std::process::id(),
+        format!("{:?}", std::thread::current().id()),
+        email,
+    )
+        .hash(&mut h);
+    let a = h.finish();
+    let mut h2 = DefaultHasher::new();
+    (a, nanos ^ 0x9e3779b97f4a7c15, email.len()).hash(&mut h2);
+    format!("{:016x}{:016x}", a, h2.finish())
 }
 
-// sessions.json: {"token": {"email": "...", "created": 123}}
+// sessions.json: {"sessions": {"token": {"email": "...", "created": 123}}}
+// scadenza 30 giorni
 fn session_email(token: &str) -> Option<String> {
     if token.is_empty() {
         return None;
     }
     let fp = data_dir().join("sessions.json");
     let cur = fs::read_to_string(fp).unwrap_or("{\"sessions\":{}}".into());
-    let needle = format!("\"{}\":", token);
-    let i = cur.find(&needle)?;
-    let rec = &cur[i + needle.len()..];
-    let email = rec.split("\"email\":\"").nth(1)?.split('"').next()?.to_string();
+    let rec = extract_record(&cur, token)?;
+    let email = take_quoted(rec.split("\"email\":\"").nth(1)?);
     if email.is_empty() {
+        return None;
+    }
+    let created: u64 = rec
+        .split("\"created\":")
+        .nth(1)?
+        .split([',', '}'])
+        .next()?
+        .trim()
+        .parse()
+        .ok()?;
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    if now.saturating_sub(created) > 30 * 24 * 3600 {
         return None;
     }
     Some(email)
@@ -266,7 +385,12 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
         }
         headers.push(h.trim_end().to_string());
     }
-    let mut body = vec![0u8; len.min(1 << 20)];
+    // rifiuto anticipato input sovradimensionato, prima di allocare/leggere il corpo
+    if len > (1 << 20) {
+        send(&mut stream, "HTTP/1.1 413 Payload Too Large", r#"{"error":"payload troppo grande"}"#);
+        return Ok(());
+    }
+    let mut body = vec![0u8; len];
     if len > 0 {
         reader.read_exact(&mut body)?;
     }
@@ -381,6 +505,11 @@ fn main() {
     println!("API: /api/health /api/areas /api/auth/* /api/favorites /api/trips (Bearer)");
     for s in listener.incoming() {
         if let Ok(st) = s {
+            // nessun thread creato oltre il limite: connessione scartata subito
+            if ACTIVE.load(Ordering::SeqCst) >= MAX_THREADS {
+                continue;
+            }
+            let _ = st.set_read_timeout(Some(std::time::Duration::from_secs(15)));
             std::thread::spawn(move || handle(st));
         }
     }
