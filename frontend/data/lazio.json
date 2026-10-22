@@ -203,12 +203,14 @@
       "scarico",
       "wifi"
     ],
-    "prezzo": "da 16€",
+    "prezzo": "€17/24h tutto incluso",
     "verificato": "2026-10-22",
-    "note": "Eventi/degustazioni; nessun contatto pubblicato online — verificare esistenza prima di partire",
-    "fonte": "Camperisti beta · directory pubbliche e siti ufficiali (es. camperonline.it) — fonte primaria da confermare",
+    "note": "ATTENZIONE: segnalata CHIUSA fino a nuova comunicazione (camperonline) — chiamare prima. 50 piazzole fronte lago.",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/area-guadetto/990",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 328 2790397",
+    "sito": "http://www.areacamperilguadetto.it"
   },
   {
     "id": "laz-10",
@@ -294,10 +296,12 @@
     ],
     "prezzo": "15/20€",
     "verificato": "2026-10-22",
-    "note": "Esistenza confermata su Pitchup; nessun telefono/prezzo pubblicato",
-    "fonte": "https://www.pitchup.com/campsites/italy/lazio/latina/sabaudia/agricampeggio_fratelli_mizzon/",
+    "note": "Esistenza confermata su Pitchup; camperonline la segnala CHIUSA — verificare prima di partire.",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/agriturismo-campeggio-flli-mizzon/13508",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": null,
+    "tel": "+39 0773 593045 / +39 349 2975852",
+    "sito": "http://www.agriturismomizzon.com"
   },
   {
     "id": "laz-14",

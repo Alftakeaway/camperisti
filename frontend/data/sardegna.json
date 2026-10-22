@@ -64,10 +64,11 @@
     ],
     "prezzo": "10€/24h",
     "verificato": "2026-10-22",
-    "note": "Ticket al bar/ristorante fronte porto; telefono solo in loco",
-    "fonte": "https://park4night.com/en/place/86870",
+    "note": "Ticket al bar/ristorante fronte porto turistico; NO scarico; 10 stalli.",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/la-marina/23590",
     "stato": "da riconfermare",
-    "stagione": "tutto l'anno"
+    "stagione": "tutto l'anno",
+    "tel": "+39 349 647 3099"
   },
   {
     "id": "sar-04",
@@ -81,12 +82,12 @@
       "acqua",
       "scarico"
     ],
-    "prezzo": "€5 a servizio (carico/scarico)",
+    "prezzo": "€5 a singolo servizio (acqua/scarichi)",
     "verificato": "2026-10-22",
-    "note": "Solo service",
+    "note": "Stazione automatica a pagamento in zona industriale; unica in zona.",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/sardegna/camper-service-palau/28516",
     "stato": "da riconfermare",
-    "stagione": null
+    "stagione": "annuale H24"
   },
   {
     "id": "sar-05",

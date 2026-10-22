@@ -251,12 +251,14 @@
       "scarico",
       "videosorveglianza"
     ],
-    "prezzo": "€10–15/giorno, elettricità extra",
+    "prezzo": "€10 sosta; €15 con acqua; €20 con acqua+luce (H24)",
     "verificato": "2026-10-22",
-    "note": "Area gestita da Salerno Mobilità; asfalto pianeggiante, non ombreggiato; pagamento al box fino alle 21; no prenotazione, no docce",
-    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/campania/parcheggio/24740",
+    "note": "Gestita da Salerno Mobilità; asfalto pianeggiante, non ombreggiato; pagamento al box; no prenotazione. Tariffe ufficiali listino online.",
+    "fonte": "https://www.salernomobilita.it/index.php/servizi/aree-camper/",
     "stato": "da riconfermare",
-    "stagione": "annuale"
+    "stagione": "annuale H24",
+    "tel": "+39 089 2769111",
+    "sito": "https://www.salernomobilita.it/index.php/servizi/aree-camper/"
   },
   {
     "id": "cam-12",
