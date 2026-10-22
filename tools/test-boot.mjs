@@ -10,7 +10,7 @@ function block(from, to) {
   return src.slice(a, b + to.length);
 }
 const initCode = block('// ---- stato locale', 'loadLocal();');
-const matchCode = block('function matchStops', '\n}\n').replace(/\n\}$/, '\n}');
+const matchCode = block('function resolveStops', '\n}\n').replace(/\n\}$/, '\n}');
 
 function run(store) {
   const keys = { ...store };
@@ -53,7 +53,7 @@ console.log('migrato:', JSON.stringify(t.r));
 if (t.r.favs['cam-01'] !== 'nota' || t.r.trips[0] !== 'cam-01') throw new Error('migrazione fallita');
 if (!t.keys.camperisti_migrated || 'camperisti_favs' in t.keys) throw new Error('flag/legacy errati');
 
-// 6. matchStops con mini catalogo
+// 6. resolveStops: solo ID espliciti, mai fuzzy
 vm.runInContext('var DB=' + JSON.stringify({ lazio: [
   { id: 'a', nome: 'Il Guadetto', comune: 'Bolsena' },
   { id: 'b', nome: 'Area Roma Nord', comune: 'Roma' },
@@ -61,11 +61,11 @@ vm.runInContext('var DB=' + JSON.stringify({ lazio: [
 const sb = { DB: { lazio: [
   { id: 'a', nome: 'Il Guadetto', comune: 'Bolsena' },
   { id: 'b', nome: 'Area Roma Nord', comune: 'Roma' },
-] } };
+] }, findItem: id => sb.DB.lazio.find(x => x.id === id) };
 vm.createContext(sb);
 vm.runInContext(matchCode, sb);
-const m = vm.runInContext('matchStops({regione:"lazio",tappe:["Bolsena — giro lago","Roma, solo transito","Posto Inesistente Xyz"]})', sb);
-console.log('match:', JSON.stringify(m));
-if (m.found.join() !== 'a,b' || m.missing.join() !== 'Posto Inesistente Xyz') throw new Error('match errato');
+const m = vm.runInContext('resolveStops({regione:"lazio",stops:["a","inesistente","a"],extra:["Posto X (non in catalogo)"]})', sb);
+console.log('resolve:', JSON.stringify(m));
+if (m.found.join() !== 'a' || m.missing.join() !== 'Posto X (non in catalogo)') throw new Error('resolve errato');
 
 console.log('BOOT-TEST-OK');

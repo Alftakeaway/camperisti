@@ -82,6 +82,30 @@
   <div class="marquee"><div class="track" id="marqueeTrack"></div></div>
 </section>
 
+<section class="gallery" aria-label="Le regioni">
+  <h2>Dove vuoi andare?</h2>
+  <p class="muted">Quattro regioni, mare, borghi e vulcani. Tocca una foto per esplorare le strutture.</p>
+  <div class="gal-grid">
+    <button class="gal-card" data-goto-reg="campania">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Positano-Amalfi_Coast-Italy.jpg?width=800" alt="Positano e la Costiera Amalfitana, Campania" loading="lazy">
+      <span><b>Campania</b><small data-gal-count="campania"></small></span>
+    </button>
+    <button class="gal-card" data-goto-reg="lazio">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Colosseum_Colosseo_Coliseum_(8082864097).jpg?width=800" alt="Il Colosseo a Roma, Lazio" loading="lazy">
+      <span><b>Lazio</b><small data-gal-count="lazio"></small></span>
+    </button>
+    <button class="gal-card" data-goto-reg="sardegna">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cala_Goloritzé_(arco).jpg?width=800" alt="L'arco naturale di Cala Goloritzé, Sardegna" loading="lazy">
+      <span><b>Sardegna</b><small data-gal-count="sardegna"></small></span>
+    </button>
+    <button class="gal-card" data-goto-reg="sicilia">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Scala_dei_Turchi.jpg?width=800" alt="La Scala dei Turchi a Realmonte, Sicilia" loading="lazy">
+      <span><b>Sicilia</b><small data-gal-count="sicilia"></small></span>
+    </button>
+  </div>
+  <p class="muted small credits">Foto: Wikimedia Commons — Positano di Glen MacLarty (CC BY 2.0), Colosseo di Bert Kaufmann (CC BY-SA 2.0), Cala Goloritzé di Sara Pizzagalli (CC BY-SA 2.0), Scala dei Turchi di Vegafi (pubblico dominio).</p>
+</section>
+
 <main>
   <section id="view-esplora" class="view">
     <div class="bar">
@@ -152,6 +176,14 @@
     </div>
   </section>
 </main>
+
+<section class="parallax" aria-label="Scala dei Turchi, Sicilia">
+  <img id="parallaxImg" src="https://commons.wikimedia.org/wiki/Special:FilePath/Scala_dei_Turchi.jpg?width=1600" alt="" loading="lazy">
+  <div class="parallax-cap">
+    <p><b>Scala dei Turchi, Realmonte</b> — falesia bianca sul mare, tappa dell'itinerario Ovest in Sicilia.</p>
+    <button class="btn primary" data-goto-reg="sicilia">Esplora la Sicilia</button>
+  </div>
+</section>
 
 <div id="modal" class="modal hidden"><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
 <div id="authModal" class="modal hidden">

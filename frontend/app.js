@@ -263,34 +263,48 @@ async function persist() {
   if (document.querySelector('#view-dashboard:not(.hidden)')) renderDash();
   return lastSync;
 }
+// merge esplicito col server: unione, il locale vince sulle note.
+// "sincronizzato" solo se entrambe le letture vanno a buon fine; mai su errore.
 async function syncFromBackend() {
-  if (!user || !user.token || !HAS_API) return;
+  if (!user || !user.token || !HAS_API) return lastSync;
   try {
     const rf = await api('/api/favorites', { headers: authH() });
-    if (rf.ok && rf.data && rf.data.favs && Object.keys(rf.data.favs).length) favs = rf.data.favs;
     const rt = await api('/api/trips', { headers: authH() });
-    if (rt.ok && rt.data && rt.data.trips && rt.data.trips.length) trips = rt.data.trips;
-    saveLocal();
-    lastSync = 'sincronizzato ✓';
+    if (!rf.ok || !rt.ok) {
+      lastSync = 'server: errore ' + (!rf.ok ? rf.status : rt.status) + ' — conservato locale';
+      renderDash();
+      return lastSync;
+    }
+    const remF = (rf.data && rf.data.favs && typeof rf.data.favs === 'object' && !Array.isArray(rf.data.favs)) ? rf.data.favs : {};
+    const remT = (rt.data && Array.isArray(rt.data.trips)) ? rt.data.trips : [];
+    // raccolte remote vuote = stato valido: si fondono, non si ignorano né si cancellano i locali
+    for (const [k, v] of Object.entries(remF)) if (!hasFav(k)) favs[k] = v;
+    const seen = new Set(trips.map(t => (t.created || '') + '|' + t.name));
+    for (const t of remT) {
+      if (t && t.name && !seen.has((t.created || '') + '|' + t.name)) {
+        trips.push({ name: t.name, notes: t.notes || '', stops: Array.isArray(t.stops) ? t.stops : [], created: t.created || new Date().toISOString() });
+        seen.add((t.created || '') + '|' + t.name);
+      }
+    }
+    lastSync = await persist();
     render(); renderDash();
-  } catch (e) {}
+    return lastSync;
+  } catch (e) {
+    lastSync = 'server non raggiungibile — conservato locale';
+    renderDash();
+    return lastSync;
+  }
 }
 
-// collega le tappe testuali dell'itinerario alle strutture del catalogo (stessa regione)
-function matchStops(t) {
-  const items = DB[t.regione] || [];
-  const found = [], missing = [];
-  for (const tp of t.tappe) {
-    const words = String(tp).toLowerCase().split(/[^a-zà-ÿ0-9]+/).filter(w => w.length > 3);
-    let best = null, bestHits = 0;
-    for (const it of items) {
-      const hay = (it.nome + ' ' + it.comune).toLowerCase();
-      const hits = words.filter(w => hay.includes(w)).length;
-      if (hits > bestHits) { bestHits = hits; best = it; }
-    }
-    if (best && !found.includes(best.id)) found.push(best.id);
-    else missing.push(tp);
+// tappe esplicite dal catalogo: niente fuzzy matching, niente associazioni sbagliate.
+// Solo gli ID elencati in t.stops vengono collegati; il resto va in t.extra ("da completare").
+function resolveStops(t) {
+  const seen = new Set();
+  const found = [];
+  for (const id of (Array.isArray(t.stops) ? t.stops : [])) {
+    if (findItem(id) && !seen.has(id)) { seen.add(id); found.push(id); }
   }
+  const missing = Array.isArray(t.extra) ? t.extra : [];
   return { found, missing };
 }
 function renderItins() {
@@ -307,7 +321,7 @@ $('#itinGrid').addEventListener('click', async e => {
   if (!b) return;
   if (!user) return openAuth();
   const t = ITINS.find(x => x.id === b.dataset.itin);
-  const { found, missing } = matchStops(t);
+  const { found, missing } = resolveStops(t);
   trips.push({
     name: t.titolo,
     notes: (t.note || '') + ' — ' + t.km + (missing.length ? '\nDa completare (non in catalogo): ' + missing.join(' · ') : ''),
@@ -461,7 +475,37 @@ document.querySelectorAll('[data-qf]').forEach(b => b.onclick = () => {
 function buildMarquee() {
   const names = [...new Set(allItems().slice(0, 30).map(i => i.comune).filter(Boolean))];
   $('#marqueeTrack').textContent = names.join('  ·  ') + '  ·  ';
+  for (const r of REGIONS) {
+    const el = document.querySelector(`[data-gal-count="${r}"]`);
+    if (el) el.textContent = `${(DB[r] || []).length} strutture`;
+  }
 }
+// gallery: tocca una foto per filtrare la regione
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-goto-reg]');
+  if (!g) return;
+  curReg = g.dataset.gotoReg;
+  document.querySelectorAll('#regionTabs button').forEach(x => x.classList.toggle('active', x.dataset.reg === curReg));
+  history.replaceState(null, '', '#/r/' + curReg);
+  nav('esplora'); render();
+  $('#grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+// parallax leggera sulla fascia (disattivata con movimento ridotto)
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const img = document.getElementById('parallaxImg');
+  if (!img) return;
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const r = img.parentElement.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+    img.style.transform = `translateY(${(p * 60).toFixed(1)}px)`;
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  update();
+})();
 
 // ---- auth: ospite / dispositivo (demo) / backend ----
 function openAuth() { $('#authModal').classList.remove('hidden'); $('#aEmail').focus(); }
@@ -513,8 +557,8 @@ async function authCall(mode) {
     try { localStorage.setItem('camperisti_user', JSON.stringify(user)); } catch (e) {}
     loadLocal();
     $('#authModal').classList.add('hidden');
-    paintAuth(); renderDash(); syncFromBackend();
-    toast('Ciao ' + (user.nome || '') + ' · sincronizzato ✓');
+    paintAuth(); renderDash();
+    toast('Ciao ' + (user.nome || '') + ' · ' + (await syncFromBackend()));
     $('#authBtn').focus();
     return;
   }
