@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 22
       - run: node tools/update-check.mjs
+      - run: node tools/promote-verified.mjs
       - run: node tools/gen-pages.mjs
       - run: |
           git config user.name "camperisti-bot"

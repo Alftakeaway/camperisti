@@ -12,12 +12,23 @@ let user = jparse(localStorage.getItem('camperisti_user'), null);
 if (user && typeof user !== 'object') user = null;
 let favs = {};
 let trips = [];
+let revs = {}; // recensioni per struttura: {id: [{voto, testo, created, u, d?}]}
+function revList(id) {
+  const a = revs[id];
+  return Array.isArray(a) ? a.filter(r => r && !r.d) : [];
+}
+function revAvg(id) {
+  const a = revList(id);
+  if (!a.length) return null;
+  return a.reduce((s, r) => s + (+r.voto || 0), 0) / a.length;
+}
 // archivi separati per identità: ospite / profilo dispositivo / email
 const nsKey = base => base + '::' + (user ? (user.email || (user.device ? 'profilo:' + user.nome : 'ospite')) : 'anonimo');
 function saveLocal() {
   try {
     localStorage.setItem(nsKey('camperisti_favs'), JSON.stringify(favs));
     localStorage.setItem(nsKey('camperisti_trips'), JSON.stringify(trips));
+    localStorage.setItem(nsKey('camperisti_revs'), JSON.stringify(revs));
   } catch (e) { /* spazio esaurito: i dati restano in memoria per la sessione */ }
 }
 function loadLocal() {
@@ -47,6 +58,14 @@ function loadLocal() {
       if (!t.u) t.u = 0;
     }
   });
+  // recensioni: oggetto {strutturaId: [recensioni]}, voci valide con voto 1-5
+  const rk = localStorage.getItem(nsKey('camperisti_revs'));
+  const rr = jparse(rk, null);
+  revs = (rr && typeof rr === 'object' && !Array.isArray(rr)) ? rr : {};
+  for (const k of Object.keys(revs)) {
+    if (!Array.isArray(revs[k])) revs[k] = [];
+    revs[k] = revs[k].filter(r => r && +r.voto >= 1 && +r.voto <= 5);
+  }
   saveLocal();
 }
 // pulizia una tantum vecchie password demo leggibili: non più usate, via
@@ -175,11 +194,21 @@ function statoBadge(it) {
     : '<span class="badge warn">da riconfermare</span>';
 }
 
+function tripHas(id) {
+  return trips.some(t => !t.d && Array.isArray(t.stops) && t.stops.includes(id));
+}
+function ratingLine(it) {
+  const a = revAvg(it.id);
+  if (a == null) return '';
+  const n = revList(it.id).length;
+  return ` <span class="muted small" title="Recensioni degli utenti">★ ${a.toFixed(1)} (${n})</span>`;
+}
+
 function card(it) {
   const saved = hasFav(it.id);
   return `<article class="card">
     <div><span class="badge ${esc(it.tipo)}">${esc(String(it.tipo).replace('_', ' '))}</span>
-    <span class="muted small">${esc(it.regione)}</span> ${statoBadge(it)}</div>
+    <span class="muted small">${esc(it.regione)}</span> ${statoBadge(it)}${ratingLine(it)}</div>
     <h3>${esc(it.nome)}</h3>
     <p class="muted small">${esc(it.comune)} · ${esc(it.indirizzo || '')}</p>
     <div class="chips">${(it.servizi || []).slice(0, 6).map(s => `<span>${esc(s)}</span>`).join('')}</div>
@@ -226,6 +255,23 @@ function openDetail(id) {
     ${it.sito ? `<p class="small">Sito ufficiale: <a href="${esc(it.sito)}" target="_blank" rel="noopener">${esc(it.sito.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a> <button class="btn ghost" data-d="recheck">⇄ ricontrolla ora</button> <span id="liveCheck" class="muted"></span></p>` : ''}
     <p>${esc(it.note || '')}</p>
     ${it.tel ? `<p>Tel: <a href="tel:${esc(it.tel)}">${esc(it.tel)}</a></p>` : '<p class="small muted">Telefono non in scheda — riconferma prima di partire.</p>'}
+    ${tripHas(it.id) ? '<p><span class="pill">nel tuo viaggio ✓</span></p>' : ''}
+    <div id="revBlock">
+      <h3>Recensioni <span id="revAvg"></span></h3>
+      <div id="revList" class="stack"></div>
+      <label for="revVoto">Il tuo voto</label>
+      <select id="revVoto" aria-label="Voto da 1 a 5">
+        <option value="5">★★★★★ (5)</option>
+        <option value="4">★★★★ (4)</option>
+        <option value="3">★★★ (3)</option>
+        <option value="2">★★ (2)</option>
+        <option value="1">★ (1)</option>
+      </select>
+      <label for="revTesto">La tua esperienza</label>
+      <textarea id="revTesto" placeholder="Come ti sei trovato? Servizi, prezzi, rumorosità…"></textarea>
+      <div class="row"><button class="btn primary" data-d="revadd">Pubblica recensione</button></div>
+      <p class="muted small">Recensioni salvate su questo dispositivo${user && user.token ? ' e sincronizzate' : ''}; la community online arriva col server attivo.</p>
+    </div>
     <label for="notaFav">La mia nota</label>
     <textarea id="notaFav" placeholder="es. piazzola ombra, chiamare prima…">${esc(favNote(it.id))}</textarea>
     <div class="row">
@@ -238,6 +284,17 @@ function openDetail(id) {
   $('#modal').classList.remove('hidden');
   $('#sheet').querySelector('button, textarea, a').focus();
   if (location.hash !== '#/s/' + id) history.replaceState(null, '', '#/s/' + id);
+  renderRevs(id);
+}
+function renderRevs(id) {
+  const list = $('#revList');
+  if (!list) return;
+  const all = revList(id);
+  const a = revAvg(id);
+  const avg = $('#revAvg');
+  if (avg) avg.textContent = a == null ? '(nessuna)' : `★ ${a.toFixed(1)} · ${all.length}`;
+  list.innerHTML = all.map((r, ix) => `<div class="favrow small"><span><b>${'★'.repeat(+r.voto || 0)}</b> · ${esc(r.testo || '')}<br><span class="muted">${esc((r.created || '').slice(0, 10))}${r.mine ? ' · tua' : ''}</span></span>${r.mine ? `<button class="btn ghost" data-d="revdel" data-ix="${ix}" aria-label="Elimina recensione">✕</button>` : ''}</div>`).join('')
+    || '<p class="muted small">Nessuna recensione. Sii il primo a raccontarla.</p>';
 }
 $('#sheet').addEventListener('click', async e => {
   const b = e.target.closest('[data-d]');
@@ -249,6 +306,28 @@ $('#sheet').addEventListener('click', async e => {
     toast('Nota salvata · ' + (await persist()));
     openDetail(id);
     render(); renderDash();
+  }
+  if (b.dataset.d === 'revadd') {
+    const voto = +($('#revVoto') || {}).value || 0;
+    const testo = ($('#revTesto') || {}).value || '';
+    if (!(voto >= 1 && voto <= 5)) { toast('Scegli un voto da 1 a 5'); return; }
+    if (!user) { toast('Accedi o entra come ospite per recensire'); openAuth(); return; }
+    const now = new Date().toISOString();
+    revs[id] = [...revList(id), { voto, testo: testo.slice(0, 2000), created: now, u: Date.now(), mine: true }];
+    toast('Recensione pubblicata · ' + (await persist()));
+    renderRevs(id); render();
+  }
+  if (b.dataset.d === 'revdel') {
+    const ix = +(b.dataset.ix || -1);
+    const all = revList(id);
+    if (all[ix]) {
+      const full = revs[id];
+      const target = all[ix];
+      const k = full.indexOf(target);
+      if (k >= 0) full[k] = { ...target, d: 1, u: Date.now() };
+      toast('Recensione eliminata · ' + (await persist()));
+      renderRevs(id); render();
+    }
   }
   if (b.dataset.d === 'recheck') {
     const it = findItem(id);
@@ -312,6 +391,24 @@ async function toggleFav(id) {
 }
 let lastSync = 'solo su questo dispositivo';
 // "sincronizzato" solo dopo conferma del server (r.ok su entrambi i POST)
+// merge recensioni: unione per (struttura, created); le cancellazioni (d=1)
+// vincono se più recenti; lapidi oltre 90gg potate
+function mergeReviews(lf, rf) {
+  const out = {};
+  const keys = new Set([...Object.keys(lf || {}), ...Object.keys(rf || {})]);
+  for (const k of keys) {
+    const seen = new Map();
+    for (const r of [...((lf || {})[k] || []), ...((rf || {})[k] || [])]) {
+      if (!r || typeof r !== 'object') continue;
+      const id = (r.created || '') + '|' + (r.testo || '').slice(0, 40);
+      const cur = seen.get(id);
+      if (!cur || (r.u || 0) > (cur.u || 0)) seen.set(id, r);
+    }
+    const list = [...seen.values()].filter(r => !(r.d && Date.now() - (r.u || 0) > TOMB_TTL));
+    if (list.length) out[k] = list.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+  }
+  return out;
+}
 async function persist() {
   saveLocal();
   if (user && user.token && HAS_API) {
@@ -319,14 +416,16 @@ async function persist() {
       const opt = b => ({ method: 'POST', headers: { 'Content-Type': 'application/json', ...authH() }, body: b, signal: AbortSignal.timeout(2500) });
       const r1 = await fetch('/api/favorites', opt(JSON.stringify({ favs })));
       const r2 = await fetch('/api/trips', opt(JSON.stringify({ trips })));
-      if (r1.status === 401 || r2.status === 401) {
+      const r3 = await fetch('/api/reviews', opt(JSON.stringify({ reviews: revs })));
+      if (r1.status === 401 || r2.status === 401 || r3.status === 401) {
         user.token = null;
         try { localStorage.setItem('camperisti_user', JSON.stringify(user)); } catch (e) {}
         lastSync = 'sessione scaduta — rieffettua il login';
-      } else if (r1.ok && r2.ok) {
+      } else if (r1.ok && r2.ok && r3.ok) {
         lastSync = 'sincronizzato ✓';
       } else {
-        lastSync = 'server: errore ' + (!r1.ok ? r1.status : r2.status);
+        const bad = [!r1.ok && r1.status, !r2.ok && r2.status, !r3.ok && r3.status].find(Boolean);
+        lastSync = 'server: errore ' + bad;
       }
     } catch (e) {
       lastSync = 'server non raggiungibile — salvato solo locale';
@@ -337,24 +436,28 @@ async function persist() {
   if (document.querySelector('#view-dashboard:not(.hidden)')) renderDash();
   return lastSync;
 }
-// merge esplicito col server: unione, il locale vince sulle note.
-// "sincronizzato" solo se entrambe le letture vanno a buon fine; mai su errore.
+// merge esplicito col server: unione LWW con lapidi per tutte le raccolte.
+// "sincronizzato" solo se tutte le letture vanno a buon fine; mai su errore.
 async function syncFromBackend() {
   if (!user || !user.token || !HAS_API) return lastSync;
   try {
     const rf = await api('/api/favorites', { headers: authH() });
     const rt = await api('/api/trips', { headers: authH() });
-    if (!rf.ok || !rt.ok) {
-      lastSync = 'server: errore ' + (!rf.ok ? rf.status : rt.status) + ' — conservato locale';
+    const rr = await api('/api/reviews', { headers: authH() });
+    if (!rf.ok || !rt.ok || !rr.ok) {
+      const bad = [!rf.ok && rf.status, !rt.ok && rt.status, !rr.ok && rr.status].find(Boolean);
+      lastSync = 'server: errore ' + bad + ' — conservato locale';
       renderDash();
       return lastSync;
     }
     const remF = (rf.data && rf.data.favs && typeof rf.data.favs === 'object' && !Array.isArray(rf.data.favs)) ? rf.data.favs : {};
     const remT = (rt.data && Array.isArray(rt.data.trips)) ? rt.data.trips : [];
+    const remR = (rr.data && rr.data.reviews && typeof rr.data.reviews === 'object' && !Array.isArray(rr.data.reviews)) ? rr.data.reviews : {};
     // merge LWW con lapidi: le cancellazioni remote con timestamp nuovo vincono,
     // i dati locali nuovi restano; niente resurrezioni né perdite silenziose
     const m = mergeStores(favs, trips, remF, remT);
     favs = m.favs; trips = m.trips;
+    revs = mergeReviews(revs, remR);
     lastSync = await persist();
     render(); renderDash();
     return lastSync;
@@ -597,7 +700,7 @@ $('#logoutBtn').onclick = async () => {
     if (user && user.token) await api('/api/auth/logout', { method: 'POST', headers: authH() });
   } catch (e) {}
   await persist();
-  user = null; favs = {}; trips = [];
+  user = null; favs = {}; trips = []; revs = {};
   try { localStorage.removeItem('camperisti_user'); } catch (e) {}
   paintAuth(); renderDash();
   toast('Uscito · sessione revocata, ogni identità conserva il proprio archivio');

@@ -28,7 +28,11 @@ ${body}
 </html>
 `;
 
-const urls = [`<url><loc>${BASE}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`];
+const urls = [`<url><loc>${BASE}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
+  `<url><loc>${BASE}/gestori.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
+  `<url><loc>${BASE}/top-10.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
+  `<url><loc>${BASE}/chi-siamo.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
+  `<url><loc>${BASE}/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>`];
 const all = {};
 for (const r of REGIONS) all[r] = JSON.parse(readFileSync(`frontend/data/${r}.json`, 'utf8'));
 
@@ -61,7 +65,7 @@ for (const r of REGIONS) {
   const items = all[r];
   const rows = items.map(it => `<div class="card"><b><a href="${BASE}/s/${it.id}.html">${esc(it.nome)}</a></b><br><span class="muted">${esc(it.comune)} · ${esc(it.tipo)} · ${esc(it.prezzo || 'n.d.')}</span></div>`).join('\n');
   const body = `<h1>Camper in ${NAMES[r]}: ${items.length} strutture</h1>
-<p>Aree sosta, campeggi, agricampeggi, parcheggi, service e officine. Stato: catalogo in verifica.</p>
+<p>Aree sosta, campeggi, agricampeggi, parcheggi, service e officine. Badge <b>verificato</b> = sito raggiungibile + telefono + listino pubblicati (controllo automatico ogni 24h).</p>
 ${rows}
 <p><a href="${BASE}/#/r/${r}">Apri la mappa interattiva del ${NAMES[r]}</a></p>`;
   writeFileSync(`frontend/r/${r}.html`, shell(`Camper in ${NAMES[r]}: aree sosta e campeggi | Camperisti`, `Elenco strutture camper in ${NAMES[r]} con servizi, prezzi e stato verifica.`, body, `r/${r}.html`));

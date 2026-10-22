@@ -778,7 +778,7 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
     }
 
     // ---- rotte autenticate: identità SOLO dal token Bearer (uid immutabile) ----
-    if path.starts_with("/api/favorites") || path.starts_with("/api/trips") {
+    if path.starts_with("/api/favorites") || path.starts_with("/api/trips") || path.starts_with("/api/reviews") {
         let (email, uid) = match session_uid(&bearer(&headers)) {
             Some(v) => v,
             None => {
@@ -786,11 +786,19 @@ fn handle_inner(mut stream: TcpStream) -> std::io::Result<()> {
                 return Ok(());
             }
         };
-        let kind = if path.starts_with("/api/favorites") { "favs" } else { "trips" };
+        let kind = if path.starts_with("/api/favorites") {
+            "favs"
+        } else if path.starts_with("/api/reviews") {
+            "revs"
+        } else {
+            "trips"
+        };
         let fp = user_file(kind, &email, &uid);
         if method == "GET" {
             let c = fs::read_to_string(&fp).unwrap_or(if kind == "favs" {
                 "{\"favs\":{}}".into()
+            } else if kind == "revs" {
+                "{\"reviews\":{}}".into()
             } else {
                 "{\"trips\":[]}".into()
             });
@@ -821,7 +829,7 @@ fn main() {
     LazyLock::force(&CORS_ORIGIN);
     let listener = TcpListener::bind(&addr).expect("bind");
     println!("Camperisti backend attivo su http://{} (CORS: {})", addr, *CORS_ORIGIN);
-    println!("API: /api/health /api/areas /api/auth/* /api/favorites /api/trips (Bearer)");
+    println!("API: /api/health /api/areas /api/auth/* /api/favorites /api/trips /api/reviews (Bearer)");
     for s in listener.incoming() {
         if let Ok(st) = s {
             // nessun thread creato oltre il limite: connessione scartata subito
