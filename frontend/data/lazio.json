@@ -230,10 +230,11 @@
     "prezzo": "15-25€",
     "verificato": "2026-10-22",
     "note": "20 piazzole, beach volley",
-    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/country-bar-pinseria-gentile/11934",
-    "stato": "da riconfermare",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/agriturismo-gentile/11934",
+    "stato": "verificato",
     "stagione": null,
-    "tel": "+39 0761 600972"
+    "tel": "+39 0761 600972",
+    "sito": "https://instagram.com/countrybar_agriturismo_gentile"
   },
   {
     "id": "laz-11",
@@ -273,13 +274,14 @@
       "navetta",
       "scarico"
     ],
-    "prezzo": "20-45€ stagione",
+    "prezzo": "€20–25/giorno 2 persone (tutto incluso)",
     "verificato": "2026-10-22",
     "note": "Base Sperlonga/Gaeta",
-    "fonte": "https://www.openstreetmap.org (nodo Quirino Area Sosta Camper, Gaeta)",
-    "stato": "da riconfermare",
-    "stagione": "annuale",
-    "tel": "+39 328 3736209"
+    "fonte": "https://quirino-area-sosta-camper.figma.site/",
+    "stato": "verificato",
+    "stagione": "annuale H24",
+    "tel": "+39 328 3736209",
+    "sito": "https://quirino-area-sosta-camper.figma.site/"
   },
   {
     "id": "laz-13",
