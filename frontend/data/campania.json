@@ -112,14 +112,15 @@
       "piscina",
       "ristorante"
     ],
-    "prezzo": "€20/equipaggio",
+    "prezzo": "€20–25/notte (da recensioni recenti)",
     "verificato": "2026-10-22",
-    "note": "36 posti, base Ischia/Procida; sito ufficiale non raggiungibile — usare telefono/email fondidivolpicelli@libero.it",
-    "fonte": "https://www.geniuscamping.com/tutti-i-campeggi/listing/azienda-agricola-parco-naturale-fondi-di-baia-na",
+    "note": "36 posti, base Ischia/Procida; sito web non raggiungibile, canale attivo Instagram",
+    "fonte": "https://www.campercontact.com/it/italia/campania/bacoli/8010/azienda-agricola-parco-naturale-fondi-di-baia",
     "stato": "da riconfermare",
     "stagione": null,
     "tel": "+39 081 8545334",
-    "sitoOk": false
+    "sitoOk": false,
+    "sito": "https://www.instagram.com/ifondidibaia/"
   },
   {
     "id": "cam-06",
@@ -135,13 +136,14 @@
       "luce",
       "scarico"
     ],
-    "prezzo": "€10/24h",
+    "prezzo": "€10–20/giorno secondo fonti",
     "verificato": "2026-10-22",
-    "note": "Via Guardascione 56; segnalata chiusura per lavori dal 2021 — chiamare prima",
-    "fonte": "https://camperweb.it/area-sosta/bacoli-napoli-bacoli-parking-area-camper/",
-    "stato": "da riconfermare",
+    "note": "ATTENZIONE: dal 2021 segnalata chiusura ai camper / solo auto (recensioni 2023-25) — chiamare prima. Via Guardascione 56.",
+    "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/campania/bacoli-parking/23437",
+    "stato": "verificato",
     "stagione": null,
-    "tel": "+39 333 3915349"
+    "tel": "+39 333 391 5339",
+    "sito": "https://www.parkingbacoli.it/"
   },
   {
     "id": "cam-07",
