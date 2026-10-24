@@ -1,12 +1,15 @@
 {
-  "date": "2026-10-23",
-  "ok": 55,
-  "ko": 5,
+  "date": "2026-10-24",
+  "ok": 52,
+  "ko": 8,
   "bad": [
+    "cam-05 Bacoli https://www.instagram.com/ifondidibaia/ (http 429)",
     "laz-09 Bolsena http://www.areacamperilguadetto.it (http 0)",
+    "laz-10 Sutri https://instagram.com/countrybar_agriturismo_gentile (http 429)",
     "laz-13 Sabaudia http://www.agriturismomizzon.com (http 403)",
     "sar-09 Sant'Antioco Cala Sapone https://www.camping-tonnara.it (http 0)",
     "sar-11 Sant'Anna Arresi http://www.agricampingruscello.it (http 0)",
-    "sic-07 Castiglione di Sicilia https://www.etnawineagriturismo.it/en/agricamper.html (http 0)"
+    "sic-07 Castiglione di Sicilia https://www.etnawineagriturismo.it/en/agricamper.html (http 0)",
+    "sic-09 Giardini Naxos http://www.parkinglagani.it (http 0)"
   ]
 }
