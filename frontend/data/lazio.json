@@ -16,7 +16,7 @@
       "wifi"
     ],
     "prezzo": "€40/notte (festività €50; >8m €50/60€; docce €1)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "35 posti, bus per centro 5km",
     "fonte": "https://www.rexbus.it/area-sosta-camper-roma/",
     "stato": "verificato",
@@ -61,7 +61,7 @@
       "wifi"
     ],
     "prezzo": "~€30/notte (5 notti €130; doccia €1,50)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "Doccia 1,50€/3min",
     "fonte": "https://www.lgproma.com/tariffe.html",
     "stato": "verificato",
@@ -84,7 +84,7 @@
       "scarico"
     ],
     "prezzo": "€30/24h",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "Treno centro 15min; WhatsApp +39 3925199095",
     "fonte": "https://www.facebook.com/p/Area-sosta-camper-Roma-Nord-61568171024601/",
     "stato": "verificato",
@@ -109,7 +109,7 @@
       "ristorante"
     ],
     "prezzo": "€25–30/equipaggio (da recensioni e Campercontact 2026)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "Camper Club Mira Lago, Via di Lunghezzina 75; navetta stazione; docce a gettoni.",
     "fonte": "https://www.campercontact.com/it/italia/lazio/roma/6790/area-camper-club-mira-lago-roma",
     "stato": "verificato",
@@ -133,7 +133,7 @@
       "service"
     ],
     "prezzo": "da booking online (preventivo)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "Base Ostia Antica + Roma",
     "fonte": "https://www.baiaholiday.com/roma-capitol/",
     "stato": "verificato",
@@ -157,7 +157,7 @@
       "orto bio"
     ],
     "prezzo": "24/30€",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "80mq ombreggiate, solo carico 12€",
     "fonte": "https://agricampeggiolabiososta.com/",
     "stato": "verificato",
@@ -180,14 +180,14 @@
       "luce"
     ],
     "prezzo": "€20/notte (2 persone)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "100 piazzole eco, tettoie FV",
     "fonte": "https://www.agricampeggiopaliano.com/",
-    "stato": "verificato",
+    "stato": "da riconfermare",
     "stagione": null,
     "tel": "+39 393 9996039",
     "sito": "https://www.agricampeggiopaliano.com/",
-    "sitoOk": true
+    "sitoOk": false
   },
   {
     "id": "laz-09",
@@ -205,7 +205,7 @@
       "wifi"
     ],
     "prezzo": "€17/24h tutto compreso",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "ATTENZIONE: segnalata CHIUSA fino a nuova comunicazione (camperonline) — chiamare prima. 50 piazzole fronte lago.",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/area-guadetto/990",
     "stato": "da riconfermare",
@@ -229,14 +229,14 @@
       "service"
     ],
     "prezzo": "15-25€",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "20 piazzole, beach volley",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/agriturismo-gentile/11934",
-    "stato": "verificato",
+    "stato": "da riconfermare",
     "stagione": null,
     "tel": "+39 0761 600972",
     "sito": "https://instagram.com/countrybar_agriturismo_gentile",
-    "sitoOk": true
+    "sitoOk": false
   },
   {
     "id": "laz-11",
@@ -252,7 +252,7 @@
       "luce"
     ],
     "prezzo": "€20 tutto l’anno (+persona €4, luce €5)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "15 piazzole ulivi, 15min Orte",
     "fonte": "https://www.sosta-camper-orte.it/prezzi/",
     "stato": "verificato",
@@ -277,7 +277,7 @@
       "scarico"
     ],
     "prezzo": "€20–25/giorno 2 persone (tutto incluso)",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "Base Sperlonga/Gaeta",
     "fonte": "https://quirino-area-sosta-camper.figma.site/",
     "stato": "verificato",
@@ -301,7 +301,7 @@
       "mare"
     ],
     "prezzo": "15/20€",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "Esistenza confermata su Pitchup; camperonline la segnala CHIUSA — verificare prima di partire.",
     "fonte": "https://www.camperonline.it/sosta-camper/aree-di-sosta/italia/lazio/agriturismo-campeggio-flli-mizzon/13508",
     "stato": "da riconfermare",
@@ -322,7 +322,7 @@
       "service"
     ],
     "prezzo": "~€30/giorno",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "note": "10.000mq, base Ponza",
     "fonte": "https://www.circemed.com/area-sosta-camper-caravan/",
     "stato": "verificato",
@@ -365,7 +365,7 @@
       "officina"
     ],
     "prezzo": "preventivo",
-    "verificato": "2026-10-28",
+    "verificato": "2026-10-29",
     "tel": "0641400133",
     "note": "Adria/Mobilvetta",
     "fonte": "https://www.campertecnica.it/",
