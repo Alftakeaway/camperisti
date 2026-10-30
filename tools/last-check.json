@@ -1,12 +1,9 @@
 {
-  "date": "2026-10-29",
-  "ok": 49,
-  "ko": 11,
+  "date": "2026-10-30",
+  "ok": 52,
+  "ko": 8,
   "bad": [
     "cam-05 Bacoli https://www.instagram.com/ifondidibaia/ (http 429)",
-    "cam-17 Sant'Anastasia https://www.romanocaravans.com/ (http 0)",
-    "laz-08 Viterbo https://www.agricampeggiopaliano.com/ (http 0)",
-    "laz-09 Bolsena http://www.areacamperilguadetto.it (http 0)",
     "laz-10 Sutri https://instagram.com/countrybar_agriturismo_gentile (http 429)",
     "laz-13 Sabaudia http://www.agriturismomizzon.com (http 403)",
     "sar-02 Alghero https://www.paradisepark.it/ (http 500)",
