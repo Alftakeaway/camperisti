@@ -2,11 +2,14 @@
   --bg:#0d1512; --panel:#14201b; --card:#182723; --line:#2a3d35;
   --ink:#eef5ef; --mut:#9db3a8; --acc:#ffb347; --acc2:#37d99a; --grad:linear-gradient(90deg,#ffb347,#ff6b6b,#37d99a);
   --r:16px;
+  --fd:'Fraunces',Georgia,serif;
 }
+@font-face{font-family:'Fraunces';font-style:normal;font-weight:300 700;font-display:swap;src:url('fonts/fraunces-var.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('fonts/inter-var.woff2') format('woff2')}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
 .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(13,21,18,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.brand{font-weight:800;letter-spacing:.3px}.brand .logo{color:var(--acc)}.brand em{font-style:normal;font-size:11px;background:var(--acc);color:#222;border-radius:99px;padding:2px 8px;margin-left:6px}
+.brand{font-family:var(--fd);font-weight:600;letter-spacing:.3px}.brand .logo{color:var(--acc)}.brand em{font-family:Inter,system-ui,sans-serif;font-style:normal;font-size:11px;background:var(--acc);color:#222;border-radius:99px;padding:2px 8px;margin-left:6px}
 .topbar nav{display:flex;gap:6px;margin-left:8px}
 .topbar nav button{background:transparent;border:1px solid transparent;color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer}
 .topbar nav button.active,.topbar nav button:hover{border-color:var(--line);background:var(--panel)}
@@ -24,7 +27,8 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;backg
 @keyframes drift{to{transform:translate(60px,40px) scale(1.15)}}
 .hero-inner{position:relative;max-width:1020px;margin:0 auto;text-align:center}
 .kicker{color:var(--acc);font-weight:700;letter-spacing:.4px}
-h1{font-size:clamp(38px,6vw,68px);line-height:1.02;margin:8px 0}
+h1{font-family:var(--fd);font-weight:600;letter-spacing:-.01em;font-size:clamp(38px,6vw,68px);line-height:1.02;margin:8px 0}
+h2{font-family:var(--fd);font-weight:600;letter-spacing:-.01em}
 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sub{color:var(--mut);max-width:720px;margin:0 auto}
 .searchrow{display:flex;gap:8px;justify-content:center;margin:20px 0;flex-wrap:wrap}
@@ -125,6 +129,7 @@ body.ops .hero-inner{margin-bottom:12px}
 .parallax img{position:fixed;inset:0;width:100%;height:100vh;object-fit:cover;z-index:-1}
 .parallax-cap{position:absolute;inset:auto 0 0 0;padding:28px 20px;background:linear-gradient(transparent,rgba(0,0,0,.72));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;z-index:1}
 .parallax-cap p{margin:0;max-width:640px}
+.parallax-cap b{font-family:var(--fd);font-weight:600}
 /* movimento ridotto: le fasce diventano immagini statiche in-flow */
 @media (prefers-reduced-motion: reduce){
   .parallax img{position:absolute;height:100%}

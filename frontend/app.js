@@ -6,6 +6,8 @@ let DB = {}, ITINS = [];
 let curReg = 'campania';
 let qf = new Set();
 let HAS_API = false;
+// Vuoto = demo statica senza backend: salta la sonda /api/health per non generare un 404 a ogni avvio.
+const API_ORIGIN = '';
 // ---- stato locale con parse sicura: archivio vuoto o corrotto non blocca mai l'avvio ----
 const jparse = (s, fb) => { try { const v = JSON.parse(s); return v === undefined ? fb : v; } catch (e) { return fb; } };
 let user = jparse(localStorage.getItem('camperisti_user'), null);
@@ -134,7 +136,7 @@ async function api(path, opts = {}, ms = 1800) {
   const c = new AbortController();
   const t = setTimeout(() => c.abort(), ms);
   try {
-    const r = await fetch(path, { ...opts, signal: c.signal });
+    const r = await fetch(API_ORIGIN + path, { ...opts, signal: c.signal });
     const data = await r.json().catch(() => null);
     return { ok: r.ok, status: r.status, data };
   } catch (e) {
@@ -146,6 +148,7 @@ async function api(path, opts = {}, ms = 1800) {
 const authH = () => (user && user.token ? { 'Authorization': 'Bearer ' + user.token } : {});
 
 async function detectApi() {
+  if (!API_ORIGIN) { HAS_API = false; return; }
   const r = await api('/api/health');
   HAS_API = !!(r.ok && r.data && r.data.ok);
 }

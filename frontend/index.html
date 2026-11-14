@@ -16,7 +16,9 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"Camperisti","url":"https://camperisti-p0ly.vercel.app/","inLanguage":"it","description":"Aree sosta e itinerari in camper in Campania, Lazio, Sardegna e Sicilia."}
 </script>
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="preload" href="fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 <a class="skip" href="#grid">Salta ai risultati</a>
@@ -88,19 +90,19 @@
   <p class="muted">Quattro regioni, mare, borghi e vulcani. Tocca una foto per esplorare le strutture.</p>
   <div class="gal-grid">
     <button class="gal-card" data-goto-reg="campania">
-      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Positano-Amalfi_Coast-Italy.jpg?width=800" alt="Positano e la Costiera Amalfitana, Campania" loading="lazy">
+      <img src="images/positano.webp" width="800" height="534" alt="Positano e la Costiera Amalfitana, Campania" loading="lazy">
       <span><b>Campania</b><small data-gal-count="campania"></small></span>
     </button>
     <button class="gal-card" data-goto-reg="lazio">
-      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Colosseum_Colosseo_Coliseum_(8082864097).jpg?width=800" alt="Il Colosseo a Roma, Lazio" loading="lazy">
+      <img src="images/colosseo.webp" width="800" height="532" alt="Il Colosseo a Roma, Lazio" loading="lazy">
       <span><b>Lazio</b><small data-gal-count="lazio"></small></span>
     </button>
     <button class="gal-card" data-goto-reg="sardegna">
-      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cala_Goloritzé_(arco).jpg?width=800" alt="L'arco naturale di Cala Goloritzé, Sardegna" loading="lazy">
+      <img src="images/cala-goloritze.webp" width="800" height="600" alt="L'arco naturale di Cala Goloritzé, Sardegna" loading="lazy">
       <span><b>Sardegna</b><small data-gal-count="sardegna"></small></span>
     </button>
     <button class="gal-card" data-goto-reg="sicilia">
-      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Scala_dei_Turchi.jpg?width=800" alt="La Scala dei Turchi a Realmonte, Sicilia" loading="lazy">
+      <img src="images/scala-dei-turchi.webp" width="800" height="532" alt="La Scala dei Turchi a Realmonte, Sicilia" loading="lazy">
       <span><b>Sicilia</b><small data-gal-count="sicilia"></small></span>
     </button>
   </div>
@@ -179,7 +181,7 @@
 </main>
 
 <section class="parallax" aria-label="Costiera Amalfitana, Campania">
-  <img class="parallaxImg" src="https://commons.wikimedia.org/wiki/Special:FilePath/Positano-Amalfi_Coast-Italy.jpg?width=1600" alt="" loading="lazy">
+  <img class="parallaxImg" src="images/positano-wide.webp" width="1600" height="1068" alt="" loading="lazy">
   <div class="parallax-cap">
     <p><b>Costiera Amalfitana</b> — in camper si guarda da Sorrento e Salerno: bus e barche per i borghi, mai col mezzo in alta stagione.</p>
     <button class="btn primary" data-goto-reg="campania">Esplora la Campania</button>
@@ -187,7 +189,7 @@
 </section>
 
 <section class="parallax" aria-label="Roma, Lazio">
-  <img class="parallaxImg" src="https://commons.wikimedia.org/wiki/Special:FilePath/Colosseum_Colosseo_Coliseum_(8082864097).jpg?width=1600" alt="" loading="lazy">
+  <img class="parallaxImg" src="images/colosseo-wide.webp" width="1600" height="1064" alt="" loading="lazy">
   <div class="parallax-cap">
     <p><b>Roma, il Colosseo</b> — base nelle aree sosta fuori centro: metro e bus per i Fori, camper fermo.</p>
     <button class="btn primary" data-goto-reg="lazio">Esplora il Lazio</button>
@@ -195,7 +197,7 @@
 </section>
 
 <section class="parallax" aria-label="Golfo di Orosei, Sardegna">
-  <img class="parallaxImg" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cala_Goloritzé_(arco).jpg?width=1600" alt="" loading="lazy">
+  <img class="parallaxImg" src="images/cala-goloritze-wide.webp" width="1600" height="1200" alt="" loading="lazy">
   <div class="parallax-cap">
     <p><b>Golfo di Orosei</b> — Cala Goloritzé si raggiunge solo a piedi o in barca; le soste camper stanno sulla costa.</p>
     <button class="btn primary" data-goto-reg="sardegna">Esplora la Sardegna</button>
@@ -203,7 +205,7 @@
 </section>
 
 <section class="parallax" aria-label="Scala dei Turchi, Sicilia">
-  <img class="parallaxImg" src="https://commons.wikimedia.org/wiki/Special:FilePath/Scala_dei_Turchi.jpg?width=1600" alt="" loading="lazy">
+  <img class="parallaxImg" src="images/scala-dei-turchi-wide.webp" width="1600" height="1064" alt="" loading="lazy">
   <div class="parallax-cap">
     <p><b>Scala dei Turchi, Realmonte</b> — falesia bianca sul mare, tappa dell'itinerario Ovest in Sicilia.</p>
     <button class="btn primary" data-goto-reg="sicilia">Esplora la Sicilia</button>
@@ -239,8 +241,9 @@
   <p><b>◈ Camperisti beta</b> — catalogo in verifica: <b>riconferma sempre telefono e prezzi prima di partire</b>. *Free: consultazione e salvataggi locali sempre gratuiti.</p>
   <p class="muted small">Regioni: <a href="r/campania.html">Campania</a> · <a href="r/lazio.html">Lazio</a> · <a href="r/sardegna.html">Sardegna</a> · <a href="r/sicilia.html">Sicilia</a></p>
   <p class="muted small"><a href="gestori.html">Sei un gestore? Inserisci la tua struttura</a> · <a href="top-10.html">Top 10 aree sosta</a> · <a href="chi-siamo.html">Chi siamo e contatti</a> · <a href="privacy.html">Privacy</a></p>
+  <p class="muted small">Fotografie via Wikimedia Commons: <a href="https://commons.wikimedia.org/wiki/File:Positano-Amalfi_Coast-Italy.jpg">Positano</a> di Glen MacLarty (CC BY 2.0); <a href="https://commons.wikimedia.org/wiki/File:Colosseum_Colosseo_Coliseum_(8082864097).jpg">Colosseo</a> di Bert Kaufmann (CC BY-SA 2.0); <a href="https://commons.wikimedia.org/wiki/File:Cala_Goloritz%C3%A9_(arco).jpg">Cala Goloritzé</a> di Sara Pizzagalli (CC BY-SA 2.0); <a href="https://commons.wikimedia.org/wiki/File:Scala_dei_Turchi.jpg">Scala dei Turchi</a> di Vegafi (pubblico dominio). Gli adattamenti in formato webp sono rilasciati con la stessa licenza degli originali.</p>
 </footer>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
