@@ -1,21 +1,13 @@
 {
-  "date": "2026-11-16",
-  "ok": 46,
-  "ko": 14,
+  "date": "2026-11-17",
+  "ok": 54,
+  "ko": 6,
   "bad": [
-    "cam-09 Sorrento https://www.nubedargento.com/ (http 0)",
-    "cam-15 Marina di Camerota https://www.campeggiomingardo.it/ (http 0)",
     "laz-13 Sabaudia http://www.agriturismomizzon.com (http 403)",
     "sar-02 Alghero https://www.paradisepark.it/ (http 500)",
-    "sar-08 Loiri Porto S.Paolo https://www.camping-tavolara.it (http 403)",
     "sar-09 Sant'Antioco Cala Sapone https://www.camping-tonnara.it (http 0)",
-    "sar-10 Oristano Torre Grande https://www.spinnakervacanze.com/ (http 0)",
     "sar-11 Sant'Anna Arresi http://www.agricampingruscello.it (http 0)",
-    "sar-12 Castiadas https://www.agricampeggiogliulivi.it/ (http 0)",
-    "sic-05 Belpasso https://monsgibelcampingpark.it/ (http 0)",
     "sic-07 Castiglione di Sicilia https://www.etnawineagriturismo.it/en/agricamper.html (http 0)",
-    "sic-09 Giardini Naxos http://www.parkinglagani.it (http 0)",
-    "sic-13 S.Croce Camerina https://www.campingluminoso.com (http 403)",
-    "sic-17 Agrigento S.Leone https://campingvalledeitempli.com (http 0)"
+    "sic-09 Giardini Naxos http://www.parkinglagani.it (http 0)"
   ]
 }
